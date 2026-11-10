@@ -292,6 +292,24 @@ module Lib
           open: 'open',
           closed: 'closed',
         },
+
+        offer: {
+          corp: 'Corp:',
+          price: 'Price:',
+          offer: 'Offer',
+        },
+
+        issue: {
+          emergency: 'Emergency Issue',
+          issue: 'Issue',
+          redeem: 'Redeem',
+          ipo: 'IPO ',
+        },
+
+        entity: {
+          closed: ' (CLOSED)',
+          order: 'Order',
+        },
       },
 
       # ── About / Footer ──────────────────────────────────────────
