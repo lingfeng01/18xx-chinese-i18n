@@ -14,6 +14,7 @@ require 'view/form'
 module View
   class User < Form
     include Lib::Settings
+    include Lib::I18n
     include Lib::WhatsThis::AutoRoute
     include GameManager
     include UserManager
@@ -47,17 +48,17 @@ module View
     end
 
     def render_profile
-      return [h('h3', 'You are not logged in')] unless @user
+      return [h('h3', t('profile.not_logged_in'))] unless @user
 
       children = []
 
       name = "#{@profile['name']}'s"
       if @profile['name'] == @user['name']
-        name = 'Your'
+        name = t('profile.your')
         children << render_settings
       end
 
-      children << render_stats("#{name} Statistics")
+      children << render_stats("#{name} #{t('profile.statistics')}")
 
       url_search_params = Lib::Params::URLSearchParams.new
       selected_titles = url_search_params.unsupported ? [] : url_search_params.get_all('profile_title')
@@ -70,8 +71,7 @@ module View
 
       all_games = active_games + finished_games
       if all_games.any? || selected_titles.any?
-        children << render_game_filters(url_search_params, selected_titles,
-                                        player_games)
+        children << render_game_filters(url_search_params, selected_titles, player_games)
       end
 
       unless selected_titles.empty?
@@ -81,7 +81,7 @@ module View
 
       unless active_games.empty?
         children << h(GameRow,
-                      header: "#{name} Active Games",
+                      header: "#{name} #{t('profile.active_games')}",
                       game_row_games: active_games,
                       type: :personal,
                       user: @user)
@@ -89,7 +89,7 @@ module View
 
       unless finished_games.empty?
         children << h(GameRow,
-                      header: "#{name} Finished Games",
+                      header: "#{name} #{t('profile.finished_games')}",
                       game_row_games: finished_games,
                       type: :personal,
                       user: @user)
@@ -99,17 +99,17 @@ module View
     end
 
     def render_settings
-      title = 'Profile Settings'
+      title = t('profile.settings')
       inputs = [
         render_username,
         render_email,
         h('div#settings__options', [
           render_notifications,
           render_default_game_options,
-          h(:h3, 'Statistics'),
-          render_checkbox('Show Individual Statistics on Profile Page', :show_stats),
-          h(:h3, 'Display'),
-          render_checkbox('Red 18xx.games Logo', :red_logo),
+          h(:h3, t('profile.statistics')),
+          render_checkbox(t('profile.show_stats'), :show_stats),
+          h(:h3, t('profile.display')),
+          render_checkbox(t('profile.red_logo'), :red_logo),
         ]),
         h('div#settings__colors', { style: { maxWidth: '38rem' } }, [
           render_color('Main Background', :bg, color_for(:bg)),
@@ -123,11 +123,11 @@ module View
         render_route_colors,
         render_password_change,
         h('div#settings__buttons', { style: { marginTop: '1rem' } }, [
-          render_button('Save Changes') { submit },
-          render_button('Reset to Defaults') { reset_settings },
-          render_button('Logout', { style: { display: 'block', margin: '1rem 0' } }) { logout },
-          render_button('Delete Account and All Data', { style: { margin: '0 0.5rem 0 0' } }) { delete },
-          render_input('Type your password to confirm',
+          render_button(t('profile.save_changes')) { submit },
+          render_button(t('profile.reset_defaults')) { reset_settings },
+          render_button(t('profile.logout'), { style: { display: 'block', margin: '1rem 0' } }) { logout },
+          render_button(t('profile.delete_account'), { style: { margin: '0 0.5rem 0 0' } }) { delete },
+          render_input(t('profile.confirm_password'),
                        id: :confirm, type: :password,
                        input_style: { width: '12rem' }, attrs: { autocomplete: 'current-password' }),
         ]),
@@ -138,58 +138,43 @@ module View
 
     def render_password_change
       h('div#settings__password', [
-        h(:h3, 'Change Password'),
-        render_input(
-          'Current Password',
-          id: :current_password,
-          type: :password,
-          attrs: { autocomplete: 'current-password' },
-          input_style: { width: '13rem' },
-        ),
-        render_input(
-          'New Password',
-          id: :new_password,
-          type: :password,
-          attrs: { autocomplete: 'new-password' },
-          input_style: { width: '13rem' },
-        ),
-        render_input(
-          'Confirm New Password',
-          id: :new_password_confirmation,
-          type: :password,
-          attrs: { autocomplete: 'new-password' },
-          input_style: { width: '13rem' },
-        ),
+        h(:h3, t('profile.change_password')),
+        render_input(t('profile.current_password'), id: :current_password, type: :password,
+          attrs: { autocomplete: 'current-password' }, input_style: { width: '13rem' }),
+        render_input(t('profile.new_password'), id: :new_password, type: :password,
+          attrs: { autocomplete: 'new-password' }, input_style: { width: '13rem' }),
+        render_input(t('profile.confirm_new_password'), id: :new_password_confirmation, type: :password,
+          attrs: { autocomplete: 'new-password' }, input_style: { width: '13rem' }),
       ])
     end
 
     def render_signup
-      return [h('h3', 'You are already logged in')] if @user
+      return [h('h3', t('profile.already_logged_in'))] if @user
 
-      title = 'Signup'
+      title = t('auth.signup_title')
       inputs = [
-        render_input('User Name', id: :name),
-        render_input('Email', id: :email, type: :email, attrs: { autocomplete: 'email' }),
-        render_input('Password', id: :password, type: :password, attrs: { autocomplete: 'new-password' }),
+        render_input(t('auth.username'), id: :name),
+        render_input(t('auth.email'), id: :email, type: :email, attrs: { autocomplete: 'email' }),
+        render_input(t('auth.password'), id: :password, type: :password, attrs: { autocomplete: 'new-password' }),
         render_notifications,
         turnstile_widget,
-        h(:div, [render_button('Create Account') { submit }]),
+        h(:div, [render_button(t('profile.create_account')) { submit }]),
       ]
 
       [render_form(title, inputs)]
     end
 
     def render_login
-      return [h('h3', 'You are already logged in')] if @user
+      return [h('h3', t('profile.already_logged_in'))] if @user
 
-      title = 'Login'
+      title = t('auth.login_title')
       inputs = [
-        render_input('Email or Username', id: :email, type: :email, attrs: { autocomplete: 'email' }),
-        render_input('Password', id: :password, type: :password, attrs: { autocomplete: 'current-password' }),
+        render_input(t('profile.email_or_username'), id: :email, type: :email, attrs: { autocomplete: 'email' }),
+        render_input(t('auth.password'), id: :password, type: :password, attrs: { autocomplete: 'current-password' }),
         turnstile_widget,
-        h(:div, { style: { marginBottom: '1rem' } }, [render_button('Login') { submit }]),
-        h(:a, { attrs: { href: '/forgot' } }, 'Forgot Password'),
-        h(:div, { style: { marginTop: '1rem' } }, [render_button('Resend verification email') { resend }]),
+        h(:div, { style: { marginBottom: '1rem' } }, [render_button(t('auth.sign_in')) { submit }]),
+        h(:a, { attrs: { href: '/forgot' } }, t('auth.forgot_password')),
+        h(:div, { style: { marginTop: '1rem' } }, [render_button(t('profile.resend_verify')) { resend }]),
       ]
 
       [render_form(title, inputs)]
@@ -214,36 +199,26 @@ module View
 
     def render_username
       h('div#settings__username', [
-        render_input(
-          'User Name',
-          id: :name,
-          attrs: { value: @user[:name] },
-          input_style: { width: '10.5rem' },
-        ),
+        render_input(t('auth.username'), id: :name,
+          attrs: { value: @user[:name] }, input_style: { width: '10.5rem' }),
       ])
     end
 
     def render_email
       h('div#settings__email', [
-        render_input(
-          'Email',
-          id: :email,
-          attrs: { value: @user[:email] },
-          input_style: { width: '13rem' },
-        ),
+        render_input(t('auth.email'), id: :email,
+          attrs: { value: @user[:email] }, input_style: { width: '13rem' }),
       ])
     end
 
     def render_notifications
       unless @notifications
-        store(:notifications, setting_for(:notifications) || default_for(:notifications),
-              skip: true)
+        store(:notifications, setting_for(:notifications) || default_for(:notifications), skip: true)
       end
 
       notification_options = NOTIFICATION_OPTIONS.flat_map do |option|
         attrs = { value: option }
         attrs[:selected] = option if @notifications == option
-
         h(:option, { attrs: attrs }, option.to_s.capitalize)
       end
 
@@ -252,23 +227,12 @@ module View
       end
 
       children = [
-        h(:h3, 'Notifications'),
-        h(
-          :a,
-          {
-            props: { href: 'https://github.com/tobymao/18xx/wiki/Notifications' },
-            style: { marginRight: '1rem' },
-          },
-          'Learn about Notifications',
-        ),
-        render_input(
-                    'Turn/Message Notifications',
-                    id: :notifications,
-                    el: 'select',
-                    on: { input: notification_change },
-                    children: notification_options
-                  ),
-]
+        h(:h3, t('profile.notifications')),
+        h(:a, { props: { href: 'https://github.com/tobymao/18xx/wiki/Notifications' },
+                style: { marginRight: '1rem' } }, t('profile.learn_notifications')),
+        render_input(t('profile.turn_notifications'), id: :notifications, el: 'select',
+          on: { input: notification_change }, children: notification_options),
+      ]
       children.concat(webhook_settings) if @notifications == :webhook
       h(:div, children)
     end
@@ -279,7 +243,6 @@ module View
       webhook_options = WEBHOOK_OPTIONS.flat_map do |k, v|
         attrs = { value: k }
         attrs[:selected] = k if @webhook == k
-
         h(:option, { attrs: attrs }, v)
       end
 
@@ -288,69 +251,46 @@ module View
       end
 
       elements = []
-
-      elements << render_input(
-                    'Webhook',
-                    id: :webhook,
-                    el: 'select',
-                    on: { input: webhook_change },
-                    children: webhook_options
-                  )
+      elements << render_input(t('profile.webhook'), id: :webhook, el: 'select',
+        on: { input: webhook_change }, children: webhook_options)
       if @webhook == :custom
-        elements << render_input('Webhook URL',
-                                 id: :webhook_url,
-                                 attrs: { value: setting_for(:webhook_url) },
-                                 input_style: { width: '30rem' })
+        elements << render_input(t('profile.webhook_url'), id: :webhook_url,
+          attrs: { value: setting_for(:webhook_url) }, input_style: { width: '30rem' })
       end
-      elements << render_input('Webhook User ID', id: :webhook_user_id,
-                                                  attrs: { value: setting_for(:webhook_user_id) })
+      elements << render_input(t('profile.webhook_user_id'), id: :webhook_user_id,
+        attrs: { value: setting_for(:webhook_user_id) })
 
       test_webhook_notification_change = lambda do
         store(:test_webhook_notification, Native(@inputs[:test_webhook_notification]).elm&.checked)
       end
-      elements << render_input('Send test notification',
-                               id: :test_webhook_notification,
-                               type: :checkbox,
-                               on: { input: test_webhook_notification_change },
-                               attrs: { checked: @test_webhook_notification })
+      elements << render_input(t('profile.send_test'), id: :test_webhook_notification,
+        type: :checkbox, on: { input: test_webhook_notification_change },
+        attrs: { checked: @test_webhook_notification })
       elements
     end
 
     def render_stats(header)
       stats = @profile['stats']
       return h(:div) unless stats
-      return h(:div, 'No eligible games') if stats.empty?
+      return h(:div, t('profile.no_games')) if stats.empty?
 
       overall = { 'Overall' => stats['overall'] }
       stats.delete('overall')
       stats.transform_keys! { |title| Engine.meta_by_title(title)&.display_title }
       stats = stats.sort_by { |k, _v| k }.to_h
 
-      rows =
-        overall.merge(stats).map do |title, (elo, plays)|
-          h(:tr, {}, [
-            h(:td, title),
-            h(:td, elo),
-            h(:td, plays),
-          ])
-        end
+      rows = overall.merge(stats).map do |title, (elo, plays)|
+        h(:tr, {}, [h(:td, title), h(:td, elo), h(:td, plays)])
+      end
 
-      table =
-        h(:div, { style: { overflowX: 'auto' } }, [
-          h(:table, [
-            h(:thead, [
-              h(:tr, [
-                h(:th, 'Game'),
-                h(:th, 'Elo Rating'),
-                h(:th, 'Number of Plays'),
-              ]),
-            ]),
-            h(:tbody, rows),
-          ]),
-        ])
+      table = h(:div, { style: { overflowX: 'auto' } }, [
+        h(:table, [
+          h(:thead, [h(:tr, [h(:th, t('profile.game')), h(:th, t('profile.elo')), h(:th, t('profile.plays'))])]),
+          h(:tbody, rows),
+        ]),
+      ])
 
-      notes = '* Updated daily. Only fully completed games are eligible.'
-
+      notes = t('profile.updated_daily')
       h('div#profile-stats', [h(:h2, header), table, notes])
     end
 
@@ -359,102 +299,57 @@ module View
     end
 
     def render_color(label, id, hex_color, attrs: {})
-      render_input(label, id: id, type: :color, attrs: { value: hex_color, **attrs }, on: { change: -> { submit } },
-                          input_style: { backgroundColor: hex_color })
+      render_input(label, id: id, type: :color, attrs: { value: hex_color, **attrs },
+        on: { change: -> { submit } }, input_style: { backgroundColor: hex_color })
     end
 
     def render_tile_colors
       h('div#settings__tiles', [
-        h(:h3, 'Map & Tile Colors'),
+        h(:h3, t('profile.map_colors')),
         h(:div, TILE_COLORS.map do |color, _|
-          render_color('', color, setting_for(color), attrs: { title: color == 'white' ? 'plain' : color })
+          render_color('', color, setting_for(color),
+            attrs: { title: color == 'white' ? 'plain' : color })
         end),
       ])
     end
 
     def render_route_colors
-      grid_props = {
-        style: {
-          display: 'grid',
-          grid: '1fr / 5rem 4rem 5rem 5rem',
-          alignItems: 'center',
-        },
-      }
+      grid_props = { style: { display: 'grid', grid: '1fr / 5rem 4rem 5rem 5rem', alignItems: 'center' } }
 
       children = ROUTE_COLORS.map.with_index do |_, index|
-        label_props =
-          if index.zero?
-            {
-              attrs: {
-                title: 'Your player color',
-              },
-              style: {
-                textDecoration: 'underline',
-                textUnderlineOffset: '0.2rem',
-                cursor: 'pointer',
-              },
-            }
-          else
-            {}
-          end
+        label_props = if index.zero?
+          { attrs: { title: 'Your player color' },
+            style: { textDecoration: 'underline', textUnderlineOffset: '0.2rem', cursor: 'pointer' } }
+        else
+          {}
+        end
 
         h(:div, grid_props, [
           h(:label, label_props, "Route #{index + 1}"),
-          render_color(
-            '',
-            route_prop_string(index, :color),
-            route_prop(index, :color),
-            attrs: { title: "color of route, train and player #{index + 1}#{index.zero? ? ' (you)' : ''}" },
-          ),
-          render_input(
-            '',
-            id: route_prop_string(index, :width),
-            type: :number,
-            attrs: {
-              title: 'width of route on map',
-              min: 6,
-              max: 24,
-              value: route_prop(index, :width),
-            },
-            input_style: { width: '3.5rem' },
-          ),
-          render_input(
-            '',
-            id: route_prop_string(index, :dash),
-            type: :text,
-            attrs: {
-              title: 'dash/gap lengths of route on map, for help hover/click header',
-              value: route_prop(index, :dash),
-            },
-            input_style: { width: '7rem' },
-          ),
+          render_color('', route_prop_string(index, :color), route_prop(index, :color),
+            attrs: { title: "color of route, train and player #{index + 1}#{index.zero? ? ' (you)' : ''}" }),
+          render_input('', id: route_prop_string(index, :width), type: :number,
+            attrs: { title: 'width of route on map', min: 6, max: 24, value: route_prop(index, :width) },
+            input_style: { width: '3.5rem' }),
+          render_input('', id: route_prop_string(index, :dash), type: :text,
+            attrs: { title: 'dash/gap lengths of route on map', value: route_prop(index, :dash) },
+            input_style: { width: '7rem' }),
         ])
       end
 
       header_props = { style: { marginLeft: '0.5rem' } }
-
-      help_message = <<~MESSAGE
-        5 = dash 5, gap 5, [repeat]
-        15 5 7.5 5 = dash 15, gap 5, dash 7.5, gap 5, [repeat]
-        hex width (side to side) = 174
-      MESSAGE
-      link_props = {
-        props: {
-          href: 'https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-dasharray',
-          title: help_message,
-        },
-        style: {
-          marginLeft: '0.5rem',
-        },
-      }
+      help_message = "5 = dash 5, gap 5, [repeat]\n15 5 7.5 5 = dash 15, gap 5, dash 7.5, gap 5, [repeat]\nhex width (side to side) = 174"
+      link_props = { props: { href: 'https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-dasharray',
+                              title: help_message },
+                     style: { marginLeft: '0.5rem' } }
 
       h('div#settings__routes', [
-        h(:h3, 'Routes, Trains & Players'),
+        h(:h3, t('profile.route_colors')),
         h(:div, grid_props, [
           h(:div, ''),
-          h(:div, header_props, 'Color'),
-          h(:div, header_props, 'Width'),
-          h(:a, link_props, 'Dash'),
+          h(:div, header_props, t('profile.color')),
+          h(:div, header_props, t('profile.width')),
+          h(:a, link_props, t('profile.dash')),
         ]),
         *children,
       ])
@@ -463,7 +358,6 @@ module View
     def delete
       password = input_elm(:confirm).value
       return store(:flash_opts, 'Password required') if password.empty?
-
       delete_user(password)
     end
 
@@ -490,41 +384,23 @@ module View
       is_async = setting_for(:is_async)
 
       children = [
-        h(:h3, 'Default Game Options'),
-        h(:p, 'Your settings here will be used as the default selection whenever you create a new multiplayer game.'),
+        h(:h3, t('profile.default_options')),
+        h(:p, t('profile.default_options_hint')),
         h(:div, { style: { padding: '0.5rem' } }, [
-            render_input(
-              'Async',
-              id: 'async',
-              type: 'radio',
-              attrs: { name: 'is_async', checked: is_async == true || is_async.nil? },
-              container_style: { display: 'inline-block' },
-            ),
-            render_input(
-              'Live',
-              id: 'live',
-              type: 'radio',
-              attrs: { name: 'is_async', checked: is_async == false },
-              container_style: { display: 'inline-block' },
-            ),
-          ]),
-
-        render_input(
-          'Invite only game',
-          id: 'invite_only',
-          type: :checkbox,
+          render_input(t('profile.async'), id: 'async', type: 'radio',
+            attrs: { name: 'is_async', checked: is_async == true || is_async.nil? },
+            container_style: { display: 'inline-block' }),
+          render_input(t('profile.live'), id: 'live', type: 'radio',
+            attrs: { name: 'is_async', checked: is_async == false },
+            container_style: { display: 'inline-block' }),
+        ]),
+        render_input(t('profile.invite_only'), id: 'invite_only', type: :checkbox,
           container_style: { paddingLeft: '0.5rem' },
-          attrs: { checked: setting_for(:invite_only) == true },
-        ),
-        render_input(
-          'Auto Routing',
-          id: 'auto_routing',
-          type: :checkbox,
+          attrs: { checked: setting_for(:invite_only) == true }),
+        render_input(t('profile.auto_routing'), id: 'auto_routing', type: :checkbox,
           container_style: { paddingLeft: '0.5rem' },
           siblings: [auto_route_whats_this],
-          attrs: { checked: setting_for(:auto_routing) == true },
-        ),
-
+          attrs: { checked: setting_for(:auto_routing) == true }),
       ]
       h(:div, children)
     end
@@ -544,37 +420,23 @@ module View
         store(:app_route, "#{@app_route.split('?').first}?#{qs}", skip: false)
       end
 
-      # Chips for selected titles
       chips = selected_titles.map do |t|
         display = title_display[t] || t
         on_remove = lambda do
           update_filter.call(selected_titles.reject { |x| x == t })
         end
-        h(:span, {
-            style: {
-              display: 'inline-flex',
-              alignItems: 'center',
-              background: '#4a4a4a',
-              color: '#fff',
-              borderRadius: '3px',
-              padding: '2px 6px',
-              margin: '2px',
-              fontSize: '0.9em',
-            },
-          }, [
+        h(:span, { style: { display: 'inline-flex', alignItems: 'center', background: '#4a4a4a',
+                            color: '#fff', borderRadius: '3px', padding: '2px 6px',
+                            margin: '2px', fontSize: '0.9em' } }, [
           h(:span, "\u{1F682} #{display}"),
-          h(:span, {
-              style: { marginLeft: '4px', cursor: 'pointer', fontWeight: 'bold' },
-              on: { click: on_remove },
-            }, "\u00d7"),
+          h(:span, { style: { marginLeft: '4px', cursor: 'pointer', fontWeight: 'bold' },
+                     on: { click: on_remove } }, "\u00d7"),
         ])
       end
 
-      # Dropdown options: exclude already-selected titles
-      game_options = [h(:option, { attrs: { value: '' } }, '(Filter by title...)')]
+      game_options = [h(:option, { attrs: { value: '' } }, t('profile.filter_by_title'))]
       title_display.each do |value, display|
         next if selected_titles.include?(value)
-
         game_options << h(:option, { attrs: { value: value } }, display)
       end
 
@@ -582,7 +444,6 @@ module View
         target = e.JS['currentTarget']
         title = target.JS['value']
         return if title.empty?
-
         update_filter.call((selected_titles + [title]).uniq)
         target.JS['value'] = ''
       end
@@ -593,35 +454,28 @@ module View
 
       unless selected_titles.empty?
         on_reset = -> { update_filter.call([]) }
-        filter_children << h(:button, {
-                               style: { marginLeft: '0.5rem' },
-                               on: { click: on_reset },
-                             }, 'Reset')
+        filter_children << h(:button, { style: { marginLeft: '0.5rem' }, on: { click: on_reset } }, t('profile.reset'))
       end
 
       h(:div, { style: { margin: '0.5rem 0' } }, [
-        h(:strong, 'Filter Games: '),
+        h(:strong, t('profile.filter_games')),
         *filter_children,
       ])
     end
 
     def params
       param = super
-
       new_pw = (param[:new_password] || param['new_password']).to_s.strip
-
       if new_pw.empty?
         %i[current_password new_password new_password_confirmation].each { |k| param.delete(k) }
         %w[current_password new_password new_password_confirmation].each { |k| param.delete(k) }
       end
-
       param
     end
 
     def clear_password_inputs
       %i[current_password new_password new_password_confirmation].each do |k|
         next unless @inputs[k]
-
         input_elm(k).value = ''
       end
     end
