@@ -272,6 +272,26 @@ module Lib
           close_company: 'Close company',
           combine_with: 'Combine with:',
         },
+
+        borrow: {
+          may_borrow: '%{name} may borrow an available train',
+          available: 'Available Trains',
+          remaining: 'Remaining Trains',
+          borrow: 'Borrow',
+          train_col: 'Train',
+          cost: 'Cost',
+          qty: 'Qty',
+        },
+
+        scrap: {
+          to_scrap: 'Trains to Scrap',
+        },
+
+        tranch: {
+          title: 'Tranches',
+          open: 'open',
+          closed: 'closed',
+        },
       },
 
       # ── About / Footer ──────────────────────────────────────────
