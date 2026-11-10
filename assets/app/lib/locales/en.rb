@@ -104,7 +104,6 @@ module Lib
       game: {
         your_turn: 'Your Turn',
         not_your_turn: 'Waiting',
-        bank: 'Bank',
         market: 'Market',
         shares: 'Shares',
         treasury: 'Treasury',
@@ -117,7 +116,6 @@ module Lib
         turn: 'Turn',
         operating_round: 'Operating Round',
         stock_round: 'Stock Round',
-        dividend: 'Dividend',
         buy_train: 'Buy Train',
         buy_shares: 'Buy Shares',
         sell_shares: 'Sell Shares',
@@ -129,6 +127,59 @@ module Lib
         settings: 'Settings',
         end_game: 'End Game',
         resign: 'Resign',
+
+        common: {
+          show: 'Show',
+          hide: 'Hide',
+          none: 'None',
+        },
+
+        bank: {
+          title: 'The Bank',
+          cash: 'Cash',
+          unlimited: 'Unlimited',
+          interest_per_loan: 'Interest per Loan',
+          future_interest_per_loan: 'Future Interest per Loan',
+          loans: 'Loans',
+          loan_table: 'Loan Table',
+          loan_value: 'Loan Value',
+          seed_money: 'Seed Money',
+          unstarted_corporations: 'Unstarted corporations',
+        },
+
+        tool: {
+          master_mode: 'Master Mode',
+          move_for_others: 'You can move for others',
+          move_for_others_enable: 'Enable to move for others',
+          confirm_end_game: 'Confirm End Game',
+          help: 'Help',
+          hotkeys: 'Hotkeys & Shortcuts',
+          notification_hint: 'Send any player a notification (via email/webhooks) by tagging them in game chat: @username',
+        },
+
+        dividend: {
+          label: 'Dividend',
+          payout: 'Pay Out',
+          withhold: 'Withhold',
+          half_pay: 'Half Pay',
+          acquisition: '(Acquisition)',
+          penalties: 'Penalties',
+          per_share: 'Per Share',
+          stock_moves: 'Stock Moves',
+          pay_dividends: 'Pay Dividends',
+          pay_dividend: 'Pay Dividend',
+        },
+
+        loan: {
+          payoff: 'Payoff Loan',
+          take: 'Take Loan',
+        },
+
+        company: {
+          value: 'Value',
+          income: 'Income',
+          certs: 'Certs',
+        },
       },
 
       # ── About / Footer ──────────────────────────────────────────
