@@ -6,6 +6,8 @@ x-rack: &rack
     OPAL_PREFORK_DISABLE: "true"
     # Self-hosted over a bare IP/port: Turnstile cannot mint a valid token, so skip it.
     DISABLE_TURNSTILE: "true"
+    # Dev does not send mail; treat new accounts as verified so they can log in.
+    SKIP_EMAIL_VERIFICATION: "true"
     # debug/info/warn/error/fatal
     DB_LOG_LEVEL: fatal
   build:

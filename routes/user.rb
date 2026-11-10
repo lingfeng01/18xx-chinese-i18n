@@ -37,7 +37,7 @@ class Api
           user = User.new
           user.password = r.params['password'] unless r.params['password']&.strip&.empty?
           user.update_settings(r.params)
-          user.settings['verified'] = false
+          user.settings['verified'] = false unless SKIP_EMAIL_VERIFICATION
           user.save
 
           send_verification_email(user, r.base_url)

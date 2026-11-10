@@ -10,6 +10,9 @@ PRODUCTION = ENV['RACK_ENV'] == 'production'
 # IP / non-registered hostname: the widget cannot mint a valid token there, so the
 # captcha is skipped server-side and no widget is rendered client-side.
 TURNSTILE_DISABLED = %w[1 true].include?(ENV['DISABLE_TURNSTILE'].to_s.downcase)
+# Dev/self-hosted deployments do not send mail (Mail.send is prod-only), so a
+# freshly registered account could never verify. Skip the email gate when set.
+SKIP_EMAIL_VERIFICATION = %w[1 true].include?(ENV['SKIP_EMAIL_VERIFICATION'].to_s.downcase)
 TURNSTILE_SITEKEY = TURNSTILE_DISABLED ? nil : (PRODUCTION ? '0x4AAAAAADuTm2-bvPUtb2pz' : '1x00000000000000000000AA')
 raise 'TURNSTILE_SECRET must be set in production' if PRODUCTION && ENV['TURNSTILE_SECRET'].to_s.empty?
 
