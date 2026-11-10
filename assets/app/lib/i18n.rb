@@ -69,9 +69,53 @@ module Lib
       val
     end
 
+    # ── 引擎数据叠加表 ──────────────────────────────────────────
+    # 引擎实体的全名 / 描述 / 能力文案存放在 :engine 分组下，
+    # 以英文原文为 key 查译文；查不到时原样返回英文，不改动引擎源数据。
+    def self.entity_name(name)
+      engine_lookup(:names, name)
+    end
+
+    def self.entity_desc(name)
+      engine_lookup(:descs, name)
+    end
+
+    def self.entity_header(text)
+      engine_lookup(:headers, text)
+    end
+
+    def self.entity_ability(text)
+      engine_lookup(:ability, text)
+    end
+
+    def self.engine_lookup(group, text)
+      return text if text.nil?
+
+      engine = dict[:engine]
+      table = engine && engine[group]
+      val = table && table[text.to_s]
+      val || text.to_s
+    end
+
     # 简短别名，include 后可直接用 t('...')
     def t(key, vars = nil)
       Lib::I18n.t(key, vars)
+    end
+
+    def entity_name(name)
+      Lib::I18n.entity_name(name)
+    end
+
+    def entity_desc(name)
+      Lib::I18n.entity_desc(name)
+    end
+
+    def entity_header(text)
+      Lib::I18n.entity_header(text)
+    end
+
+    def entity_ability(text)
+      Lib::I18n.entity_ability(text)
     end
   end
 end
