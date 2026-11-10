@@ -11,6 +11,7 @@ module View
       include Actionable
       include Lib::Settings
       include AlternateCompanies
+      include Lib::I18n
 
       needs :company
       needs :bids, default: nil
@@ -157,18 +158,18 @@ module View
                         end
 
           company_name_str = @game.respond_to?(:company_size) ? "[#{@game.company_size(@company)}] " : ''
-          company_name_str += @company.name
+          company_name_str += entity_name(@company.name)
 
           children = [
-            h(:div, { style: header_style }, @game.company_header(@company)),
+            h(:div, { style: header_style }, entity_header(@game.company_header(@company))),
             h(:div, company_name_str),
-            h(:div, { style: description_style }, @company.desc),
+            h(:div, { style: description_style }, entity_desc(@company.name)),
           ]
           company_value = @game.company_value(@company)
-          children << h(:div, { style: value_style }, "Value: #{@game.format_currency(company_value)}") if company_value
-          children << h(:div, { style: revenue_style }, "Revenue: #{revenue_str}") if @company.revenue
+          children << h(:div, { style: value_style }, "#{t('game.company.value')}: #{@game.format_currency(company_value)}") if company_value
+          children << h(:div, { style: revenue_style }, "#{t('game.company.income')}: #{revenue_str}") if @company.revenue
           unless @company.discount.zero?
-            children << h(:div, { style: { float: 'center' } }, "Price: #{@game.format_currency(@company.min_bid)}")
+            children << h(:div, { style: { float: 'center' } }, "#{t('game.company.price')}: #{@game.format_currency(@company.min_bid)}")
           end
           children << render_bidders if @bids && !@bids.empty?
 
@@ -208,9 +209,9 @@ module View
 
       def render_company_on_card(company)
         title_str = @game.respond_to?(:company_size) ? "[#{@game.company_size(company)}] company: " : ''
-        title_str += company.name
+        title_str += entity_name(company.name)
         company_name_str = @game.respond_to?(:company_size_str) ? "[#{@game.company_size_str(company)}] " : ''
-        company_name_str += company.name
+        company_name_str += entity_name(company.name)
 
         extra = []
         if (uses = company.ability_uses)
@@ -245,7 +246,7 @@ module View
             fontSize: '80%',
           },
         }
-        @hidden_divs[company.sym] = h(:div, hidden_props, company.desc)
+        @hidden_divs[company.sym] = h(:div, hidden_props, entity_desc(company.name))
         revenue_str = if @game.respond_to?(:company_revenue_str)
                         @game.company_revenue_str(company)
                       else
