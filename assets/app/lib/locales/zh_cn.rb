@@ -247,6 +247,30 @@ module Lib
           rusts: '报废：%{names}',
           unlimited: '不限量',
         },
+
+        map: {
+          player_colors: '玩家颜色',
+          simple_logos: '简化标志',
+          location_names: '地名',
+          hex_coords: '格坐标',
+          tile_numbers: '板块编号',
+          starting_map: '起始地图',
+          show_last_route: '显示上次路线与板块：',
+        },
+
+        ability: {
+          title: '能力：',
+          show_others: '显示其他玩家',
+          hide_others: '隐藏其他玩家',
+          show_others_title: '显示其他玩家的公司',
+          hide_others_title: '隐藏其他玩家的公司',
+          assign_to: '分配给 %{name}',
+          acquire_train: '从车厂收购 %{name} 火车',
+          purchase_train: '以 %{price} 购买 %{name}',
+          sell_company: '出售公司（%{price}）',
+          close_company: '关闭公司',
+          combine_with: '组合：',
+        },
       },
 
       # ── 关于页 ──────────────────────────────────────────────────
