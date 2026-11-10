@@ -52,7 +52,7 @@ module View
         opts = {
           color: :yellow,
           click: log_and_click,
-          message: "Click confirm if #{consenters_str} has already consented to this action.",
+          message: Lib::I18n.t('game.action.consent', names: consenters_str),
         }
         store(:confirm_opts, opts, skip: false)
       end
@@ -68,15 +68,11 @@ module View
 
       def process_action(action)
         if @game.exception
-          msg = 'This game is broken and cannot accept any new actions. If '\
-                'this issue has not already been reported, please follow the '\
-                'instructions at the top of the page to report it.'
-          return store(:flash_opts, msg)
+          return store(:flash_opts, Lib::I18n.t('game.action.broken'))
         end
 
         if Lib::Params['action']
-          return store(:flash_opts, 'You cannot make changes while browsing history.
-            Press >| to navigate to the current game action.')
+          return store(:flash_opts, Lib::I18n.t('game.action.browsing_history'))
         end
 
         if !hotseat? &&
@@ -89,13 +85,10 @@ module View
             msg =
               if @game.active_players_id.include?(@user['id'])
                 unless @valid_actors.empty?
-                  "Only #{@valid_actors.map(&:name).join(' and ')} "\
-                    'may perform that action. Turn on master mode under the Tools '\
-                    'menu to act for others.'
+                  Lib::I18n.t('game.action.only_actor', names: @valid_actors.map(&:name).join(' and '))
                 end
               else
-                'Not your turn. Turn on master mode under the Tools menu to act '\
-                  'for others.'
+                Lib::I18n.t('game.action.not_your_turn')
               end
             return store(:flash_opts, msg)
           end
@@ -140,14 +133,14 @@ module View
           end
           @connection.post(GameManager.url(@game_data, '/action'), json) do |data|
             if (error = data['error'])
-              store(:flash_opts, "The server did not accept this action due to: #{error}... refreshing.")
+              store(:flash_opts, Lib::I18n.t('game.action.server_rejected', error: error))
               `setTimeout(function() { location.reload() }, 5000)`
             end
           end
         else
           store(
             :flash_opts,
-            'You are not in this game. Moves are temporary. You can clone this game in the tools tab.',
+            Lib::I18n.t('game.action.not_in_game'),
             skip: true,
           )
         end
