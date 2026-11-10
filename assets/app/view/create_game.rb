@@ -10,6 +10,7 @@ module View
   class CreateGame < Form
     include GameManager
     include Lib::Settings
+    include Lib::I18n
     include Lib::WhatsThis::AutoRoute
     include Lib::WhatsThis::EngineV2
 
@@ -26,44 +27,29 @@ module View
     needs :is_async, default: nil, store: true
     needs :keywords, default: nil, store: true
 
-    # hashmap, game title to min/max player count
     needs :min_p, default: {}, store: false
     needs :max_p, default: {}, store: false
-
-    # int, min/max player count for the currently selected title
     needs :min_players, default: nil, store: true
     needs :max_players, default: nil, store: true
 
     def render_create_button(check_options: true)
       error = check_options &&
               selected_game_or_variant.check_options(@optional_rules, @min_players, @max_players)&.[](:error)
-      (render_button('Create', { style: { margin: '0.5rem 1rem 1rem 0' }, attrs: { disabled: !!error } }) { submit })
+      (render_button(t('buttons.create'), { style: { margin: '0.5rem 1rem 1rem 0' }, attrs: { disabled: !!error } }) { submit })
     end
 
     def render_content
       @label_style = { display: 'block' }
-
       inputs = [mode_selector]
 
       if @mode == :json
         inputs << render_create_button(check_options: false)
         inputs << render_upload_button
         inputs << render_input(
-          '',
-          id: :game_data,
-          el: :textarea,
-          attrs: {
-            placeholder: 'Paste JSON game data or upload a file.',
-            cols: 50,
-          },
-          container_style: {
-            display: 'block',
-          },
-          input_style: {
-            height: '66vh',
-            maxWidth: '96vw',
-            margin: '1rem 0',
-          },
+          '', id: :game_data, el: :textarea,
+          attrs: { placeholder: t('create_game.paste_json'), cols: 50 },
+          container_style: { display: 'block' },
+          input_style: { height: '66vh', maxWidth: '96vw', margin: '1rem 0' },
         )
       else
         if selected_game_or_variant
@@ -74,23 +60,15 @@ module View
 
           case @mode
           when :multi
-            inputs << h(:label, { style: @label_style }, 'Game Options')
+            inputs << h(:label, { style: @label_style }, t('create_game.game_options'))
             inputs << render_game_type
-            inputs << render_input(
-              'Invite only game',
-              id: 'unlisted',
-              type: :checkbox,
+            inputs << render_input(t('create_game.invite_only'), id: 'unlisted', type: :checkbox,
               container_style: { paddingLeft: '0.5rem' },
-              attrs: { checked: setting_for(:invite_only) == true },
-            )
+              attrs: { checked: setting_for(:invite_only) == true })
             if selected_game_or_variant::AUTOROUTE
-              inputs << render_input(
-                'Auto Routing',
-                id: 'auto_routing',
-                type: :checkbox,
+              inputs << render_input(t('profile.auto_routing'), id: 'auto_routing', type: :checkbox,
                 siblings: [auto_route_whats_this],
-                attrs: { checked: setting_for(:auto_routing) == true },
-              )
+                attrs: { checked: setting_for(:auto_routing) == true })
             end
           when :hotseat
             inputs << h(:label, { style: @label_style }, 'Player Names')
@@ -106,7 +84,6 @@ module View
         end
 
         inputs << render_keyword_search
-
         table = render_games_table
         inputs << h(:span, "#{table[:game_count]} Titles")
         inputs << table[:rendered]
@@ -115,52 +92,36 @@ module View
       description = []
       unless @user
         description += [
-          h(:a, { attrs: { href: '/signup' } }, 'Signup'), ' or ',
-          h(:a, { attrs: { href: '/login' } }, 'login'), ' to play multiplayer.'
+          h(:a, { attrs: { href: '/signup' } }, t('nav.signup')), ' 或 ',
+          h(:a, { attrs: { href: '/login' } }, t('nav.login')), ' 后可进行多人对局。'
         ]
       end
-      description << h(:p, 'If you are new to 18xx games then Shikoku 1889, 18Chesapeake or 18MS are good games to begin with.')
-      render_form('Create New Game', inputs, description)
+      description << h(:p, '如果您是 18xx 新手，推荐从 Shikoku 1889、18Chesapeake 或 18MS 开始。')
+      render_form(t('create_game.title'), inputs, description)
     end
 
     def render_inputs
       title = selected_game_or_variant.title
-
       game_max_players = @max_p[title]
       game_min_players = selected_game_or_variant.min_players(@optional_rules, game_max_players)
 
       inputs = [
         render_input('Description', id: :description, placeholder: 'Add a title', label_style: @label_style),
-        render_input(
-          "Min Players (#{game_min_players})",
-          id: :min_players,
-          type: :number,
-          attrs: {
-            value: @min_players || @min_p[title],
-            required: true,
-          },
+        render_input("Min Players (#{game_min_players})", id: :min_players, type: :number,
+          attrs: { value: @min_players || @min_p[title], required: true },
           container_style: @mode == :hotseat ? { display: 'none' } : {},
           input_style: { width: '3.5rem' },
           label_style: @label_style,
-          on: { input: -> { update_inputs } },
-        ),
-        render_input(
-          @mode == :hotseat ? 'Players' : "Max Players (#{game_max_players})",
-          id: :max_players,
-          type: :number,
-          attrs: {
-            value: @max_players || @max_p[title],
-            required: true,
-          },
+          on: { input: -> { update_inputs } }),
+        render_input(@mode == :hotseat ? 'Players' : "Max Players (#{game_max_players})", id: :max_players, type: :number,
+          attrs: { value: @max_players || @max_p[title], required: true },
           input_style: { width: '3.5rem' },
           label_style: @label_style,
-          on: { input: -> { update_inputs } },
-        ),
+          on: { input: -> { update_inputs } }),
       ]
 
       div_props = {}
       div_props[:style] = { display: 'none' } if @mode == :json
-
       h(:div, div_props, inputs)
     end
 
@@ -180,13 +141,11 @@ module View
 
     def uncheck_game_variant
       return unless @selected_variant
-
       Native(@inputs[@selected_variant[:sym]]).elm&.checked = false
     end
 
     def uncheck_optional_rules
       return unless selected_game_or_variant
-
       selected_game_or_variant::OPTIONAL_RULES.each do |o_r|
         Native(@inputs[o_r[:sym]])&.elm&.checked = false
       end
@@ -194,7 +153,6 @@ module View
 
     def sync_rules
       return unless selected_game_or_variant
-
       selected_game_or_variant::OPTIONAL_RULES.each do |o_r|
         Native(@inputs[o_r[:sym]])&.elm&.checked = @optional_rules.include?(o_r[:sym])
       end
@@ -221,13 +179,10 @@ module View
     def uncheck_mutex(sym)
       return unless selected_game_or_variant
       return if selected_game_or_variant::MUTEX_RULES.empty?
-
       selected_game_or_variant::MUTEX_RULES.each do |set|
         next unless set.include?(sym)
-
         set.each do |s|
           next if s == sym
-
           @optional_rules.delete(s)
           sync_rule(s)
         end
@@ -249,27 +204,18 @@ module View
     def render_optional
       game_variants = @game_variants.map do |sym, variant|
         update_player_range(variant[:meta])
-
         stage = variant[:meta]::DEV_STAGE
         next if stage == :prealpha && @production
-
         stage_str = stage == :production ? '' : "(#{stage}) "
-
         desc_text = variant[:desc] ? ": #{variant[:desc]}" : ''
         label_text = "#{stage_str}#{variant[:name]}#{desc_text}"
-
-        h(:li, [render_input(
-          label_text,
-          type: 'checkbox',
-          id: sym,
+        h(:li, [render_input(label_text, type: 'checkbox', id: sym,
           attrs: { value: sym, checked: @selected_variant == variant },
-          on: { input: toggle_game_variant(sym) },
-        )])
+          on: { input: toggle_game_variant(sym) })])
       end.compact
 
       optional_rules = selected_game_or_variant::OPTIONAL_RULES.map do |o_r|
         next if o_r[:hidden]
-
         desc_text = o_r[:desc] ? ": #{o_r[:desc]}" : ''
         parenthetical = ''
         if o_r[:players] == [1]
@@ -284,29 +230,14 @@ module View
           parenthetical += "by #{o_r[:designer]}"
         end
         desc_text += " (#{parenthetical})" if parenthetical != ''
-
         label_text = "#{o_r[:short_name]}#{desc_text}"
-        h(:li, [render_input(
-          label_text,
-          type: 'checkbox',
-          id: o_r[:sym],
-          attrs: {
-            value: o_r[:sym],
-            checked: @optional_rules.include?(o_r[:sym]),
-            disabled: !@visible_optional_rules.find { |vo_r| vo_r[:sym] == o_r[:sym] },
-          },
-          on: { input: toggle_optional_rule(o_r[:sym]) },
-        )])
+        h(:li, [render_input(label_text, type: 'checkbox', id: o_r[:sym],
+          attrs: { value: o_r[:sym], checked: @optional_rules.include?(o_r[:sym]),
+                   disabled: !@visible_optional_rules.find { |vo_r| vo_r[:sym] == o_r[:sym] } },
+          on: { input: toggle_optional_rule(o_r[:sym]) })])
       end.compact
 
-      ul_props = {
-        style: {
-          listStyle: 'none',
-          marginTop: '0',
-          paddingLeft: '0.5rem',
-        },
-      }
-
+      ul_props = { style: { listStyle: 'none', marginTop: '0', paddingLeft: '0.5rem' } }
       children = [
         h(:h4, 'Game Variants / Optional Rules'),
         h(:ul, ul_props, [*game_variants, *optional_rules]),
@@ -315,25 +246,12 @@ module View
       checked_options = selected_game_or_variant.check_options(@optional_rules, @min_players, @max_players)
       if checked_options
         if (info = checked_options[:info])
-          children.concat(
-            [
-              h(:h4, 'Option Info'),
-              h(:div, info),
-              h(:br),
-            ]
-          )
+          children.concat([h(:h4, 'Option Info'), h(:div, info), h(:br)])
         end
         if (error = checked_options[:error])
-          children.concat(
-            [
-              h(:h4, 'Option Errors'),
-              h(:div, error),
-              h(:br),
-            ]
-          )
+          children.concat([h(:h4, 'Option Errors'), h(:div, error), h(:br)])
         end
       end
-
       h(:div, children)
     end
 
@@ -342,30 +260,19 @@ module View
         %x{
           const result = document.getElementById('game_data')
           var file = #{e}.target.files[0];
-
           if(file.size <= 5 * 1024 * 1024) {
             var reader = new FileReader();
-            reader.onload = function(event) {
-                result.value = event.target.result;
-              };
+            reader.onload = function(event) { result.value = event.target.result; };
             reader.readAsText(file, 'UTF-8');
           } else {
             self['$store']('flash_opts', 'This file is too big.')
           }
         }
       end
-
       h('div.inline-block', [
-        render_button('Upload file') { `document.getElementById('file_upload').click()` },
-        h(:input, {
-            attrs: {
-              id: :file_upload,
-              type: :file,
-              accept: 'application/json',
-            },
-            on: { change: upload },
-            style: { display: 'none' },
-          }),
+        render_button(t('create_game.upload_file')) { `document.getElementById('file_upload').click()` },
+        h(:input, { attrs: { id: :file_upload, type: :file, accept: 'application/json' },
+          on: { change: upload }, style: { display: 'none' } }),
       ])
     end
 
@@ -375,9 +282,9 @@ module View
 
     def mode_selector
       h(:div, { style: { margin: '1rem 0' } }, [
-        *mode_input(:multi, 'Multiplayer'),
-        *mode_input(:hotseat, 'Hotseat'),
-        *mode_input(:json, 'Import hotseat game'),
+        *mode_input(:multi, t('create_game.multiplayer')),
+        *mode_input(:hotseat, t('create_game.hotseat')),
+        *mode_input(:json, '导入热座对局'),
       ])
     end
 
@@ -386,56 +293,34 @@ module View
         store(:mode, mode, skip: !selected_game_or_variant.nil?)
         update_inputs
       end
-
-      [render_input(
-        text,
-        id: text,
-        type: 'radio',
+      [render_input(text, id: text, type: 'radio',
         attrs: { name: 'mode_options', checked: @mode == mode },
-        on: { click: click_handler },
-      )]
+        on: { click: click_handler })]
     end
 
     def render_game_type
       if @is_async.nil?
         is_async = setting_for(:is_async)
-        @is_async =
-          if is_async.nil?
-            true
-          else
-            is_async
-          end
+        @is_async = is_async.nil? ? true : is_async
       end
-
       h(:div, { style: { padding: '0.5rem' } }, [
-        render_input(
-          'Async',
-          id: 'async',
-          type: 'radio',
+        render_input(t('create_game.async'), id: 'async', type: 'radio',
           attrs: { name: 'is_async', checked: @is_async == true },
-          on: { click: -> { store(:is_async, true, skip: true) } }
-        ),
-        render_input(
-          'Live',
-          id: 'live',
-          type: 'radio',
+          on: { click: -> { store(:is_async, true, skip: true) } }),
+        render_input('实时', id: 'live', type: 'radio',
           attrs: { name: 'is_async', checked: @is_async == false },
-          on: { click: -> { store(:is_async, false, skip: true) } }
-        ),
+          on: { click: -> { store(:is_async, false, skip: true) } }),
       ])
     end
 
     def submit
       return if !selected_game_or_variant && @mode != :json
-
       game_params = params
 
       if @mode != :json
         title = selected_game_or_variant.title
-
         max_players = game_params[:max_players].to_i
         min_players = game_params[:min_players].to_i
-
         if min_players < @min_p[title] || max_players > @max_p[title] || min_players > max_players
           min = @min_p[title] == @max_p[title] ? '' : "within #{@min_p[title]}-"
           player_s = "player#{@max_p[title] == 1 ? '' : 's'}"
@@ -448,17 +333,13 @@ module View
         game_params[:seed] = game_params[:seed].to_i
         game_params[:seed] = nil if (game_params[:seed]).zero?
         return create_game(game_params)
-
       when :hotseat
         game_data = {
-          settings: {
-            optional_rules: game_params[:optional_rules] || [],
-          },
+          settings: { optional_rules: game_params[:optional_rules] || [] },
           title: game_params[:title],
         }
         game_data[:settings][:seed] = game_params[:seed] if game_params[:seed]
         game_data[:settings][:use_engine_v2] = game_params[:use_engine_v2] if game_params[:use_engine_v2]
-
       when :json
         begin
           game_data = JSON.parse(game_params['game_data'])
@@ -467,10 +348,7 @@ module View
         end
       end
 
-      players = game_params
-      .select { |k, _| k.start_with?('player_') }
-      .map { |_, name| name.gsub(/\s+/, ' ').strip }
-
+      players = game_params.select { |k, _| k.start_with?('player_') }.map { |_, name| name.gsub(/\s+/, ' ').strip }
       return store(:flash_opts, 'Cannot have duplicate player names') if players.uniq.size != players.size
 
       checked_options = Engine.meta_by_title(game_data[:title])
@@ -493,16 +371,11 @@ module View
 
     def params
       params = super
-
       params['title'] = @selected_variant ? @selected_variant[:title] : @selected_game&.title
-
       if params['title']
         game = Engine.meta_by_title(params['title'])
-        params[:optional_rules] = game::OPTIONAL_RULES
-                                    .map { |o_r| o_r[:sym] }
-                                    .select { |rule| params.delete(rule) }
+        params[:optional_rules] = game::OPTIONAL_RULES.map { |o_r| o_r[:sym] }.select { |rule| params.delete(rule) }
       end
-
       params
     end
 
@@ -514,14 +387,12 @@ module View
       @selected_game ||=
         if @title
           closest = Engine.meta_by_title(@title)
-
           if (parent_game = Engine.meta_by_title(closest.title)::GAME_IS_VARIANT_OF)
             title = parent_game.title
             @selected_variant = parent_game.game_variants.values.find { |v| v[:title] == closest.title }
           else
             title = closest.title
           end
-
           Engine.meta_by_title(title)
         end
     end
@@ -538,7 +409,6 @@ module View
 
     def update_inputs(title_change: false)
       return unless selected_game_or_variant
-
       title = selected_game_or_variant.title
       max_players_elm = Native(@inputs[:max_players])&.elm
       min_players_elm = Native(@inputs[:min_players])&.elm
@@ -551,10 +421,8 @@ module View
         min_players_elm&.value = game_min_players
       end
 
-      # NOTE: Letters resolve to 0 when converted to integers
       max_players = max_players_elm&.value&.to_i
       min_players = min_players_elm&.value&.to_i
-
       store(:max_players, max_players, skip: true)
       store(:min_players, min_players, skip: true)
       store(:selected_game, selected_game, skip: true)
@@ -573,65 +441,43 @@ module View
         end
       end
       sync_rules
-
       store(:optional_rules, @optional_rules, skip: true)
       store(:visible_optional_rules, visible_rules)
     end
 
     def select_game(meta)
       @selected_game = meta
-
       update_player_range(meta)
-
       uncheck_game_variant
       @selected_variant = nil
       @game_variants = {}
-
       uncheck_optional_rules
       @optional_rules = []
-
       preselect_variant(@selected_game)
       preselect_optional_rules(@selected_game)
-
       update_inputs(title_change: true)
-
       `window.scroll(0, 0)`
     end
 
     def render_random_seed
       h(:div, [
-          render_input(
-            'Random Seed',
-            id: :seed,
-            placeholder: 'Optional random seed',
+          render_input('Random Seed', id: :seed, placeholder: 'Optional random seed',
             label_style: { display: 'none' },
-            on: {
-              keyup: lambda { |e|
-                Native(e)['key'] == 'Enter' && e.JS.stopPropagation
-              },
-            }
-          ),
+            on: { keyup: lambda { |e| Native(e)['key'] == 'Enter' && e.JS.stopPropagation } }),
         ])
     end
 
     def game_rows_data
       @game_rows_data ||= visible_games.map do |game|
         next if game.meta::GAME_IS_VARIANT_OF
-
-        status =
-          begin
-            parts = []
-            parts << 'Prototype' if game.meta::PROTOTYPE
-            parts << game.meta::DEV_STAGE.capitalize
-            parts.join(', ')
-          end
-
-        {
-          'title' => game.display_title,
-          'status' => status,
-          'location' => game.meta::GAME_LOCATION,
-          'meta' => game.meta,
-        }
+        status = begin
+          parts = []
+          parts << 'Prototype' if game.meta::PROTOTYPE
+          parts << game.meta::DEV_STAGE.capitalize
+          parts.join(', ')
+        end
+        { 'title' => game.display_title, 'status' => status,
+          'location' => game.meta::GAME_LOCATION, 'meta' => game.meta }
       end.compact
     end
 
@@ -641,12 +487,9 @@ module View
 
       if @keywords&.size&.positive?
         searches = @keywords.split(/[:, ]+/).map(&:upcase)
-
         selected_games = selected_games.select do |game|
           searches.all? do |search|
-            game['meta'].keywords.any? do |keyword|
-              keyword =~ /#{search}/
-            end
+            game['meta'].keywords.any? { |keyword| keyword =~ /#{search}/ }
           end
         end
       end
@@ -658,42 +501,26 @@ module View
           row_style['background-color'] = 'lightblue'
           row_style['color'] = 'black'
         end
-
         row_props = { on: { click: -> { select_game(game['meta']) } }, style: row_style }
-
         h(:tr, row_props, cols.map { |col| h(:td, td_props, game[col].to_s) })
       end
 
       props = { style: { 'text-align': 'left' } }
-      rendered = h(
-        'table.create-game-table',
-        {},
-        [
-          h(:thead, [
-              h(:tr, cols.map { |col| h(:th, props, col.capitalize) }),
-            ]),
-          h(:tbody, game_rows),
-        ]
-      )
-
+      rendered = h('table.create-game-table', {}, [
+        h(:thead, [h(:tr, cols.map { |col| h(:th, props, col.capitalize) })]),
+        h(:tbody, game_rows),
+      ])
       { rendered: rendered, game_count: game_rows.size }
     end
 
     def render_keyword_search
       attrs = @keywords ? { value: @keywords } : {}
-
-      render_input(
-        'Keywords',
-        id: :keywords,
-        placeholder: 'Search by Keyword',
+      render_input('Keywords', id: :keywords, placeholder: 'Search by Keyword',
         input_style: { 'margin-top': '50px' },
         label_style: { display: 'none' },
         attrs: attrs,
-        on: {
-          input: ->(e) { update_keyword_search(e) },
-          keyup: ->(e) { Native(e)['key'] == 'Enter' && e.JS.stopPropagation },
-        },
-      )
+        on: { input: ->(e) { update_keyword_search(e) },
+              keyup: ->(e) { Native(e)['key'] == 'Enter' && e.JS.stopPropagation } })
     end
 
     def update_keyword_search(_e, *_args, **_kwargs)
@@ -704,7 +531,6 @@ module View
 
     def should_render_optional?
       return false unless selected_game_or_variant
-
       @game_variants = selected_game.game_variants
       @visible_optional_rules = selected_game_or_variant::OPTIONAL_RULES.reject { |rule| filtered_rule?(rule) }
       !@game_variants.empty? || !selected_game_or_variant::OPTIONAL_RULES.empty?
@@ -716,19 +542,13 @@ module View
     end
 
     def render_engine_v2
-      render_input(
-        'Use Engine V2 (experimental)',
-        id: 'use_engine_v2',
-        type: :checkbox,
+      render_input('Use Engine V2 (experimental)', id: 'use_engine_v2', type: :checkbox,
         container_style: { paddingLeft: '0.5rem' },
         attrs: { checked: false },
-        siblings: [engine_v2_whats_this],
-      )
+        siblings: [engine_v2_whats_this])
     end
 
     def should_render_engine_v2?
-      # for now, only available locally for any contributors
-      # https://github.com/tobymao/18xx/issues/12193
       !@production
     end
   end
