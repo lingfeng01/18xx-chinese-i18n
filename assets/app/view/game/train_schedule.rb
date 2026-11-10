@@ -6,6 +6,7 @@ module View
   module Game
     class TrainSchedule < Snabberb::Component
       include Lib::Settings
+      include Lib::I18n
 
       needs :game
 
@@ -51,14 +52,14 @@ module View
 
         rust_schedule, obsolete_schedule = rust_obsolete_schedule
         trs = if @game.depot.upcoming.empty?
-                'No Upcoming Trains'
+                t('game.train.none_upcoming')
               else
                 @game.depot.upcoming.reject(&:reserved).group_by(&:name).map do |name, trains|
                   events = []
-                  events << h('div.left', "obsoletes #{obsolete_schedule[name].join(', ')}") unless obsolete_schedule[name].empty?
-                  events << h('div.left', "rusts #{rust_schedule[name].join(', ')}") unless rust_schedule[name].empty?
+                  events << h('div.left', t('game.train.obsoletes', names: obsolete_schedule[name].join(', '))) unless obsolete_schedule[name].empty?
+                  events << h('div.left', t('game.train.rusts', names: rust_schedule[name].join(', '))) unless rust_schedule[name].empty?
 
-                  count_str = trains.first.unlimited ? 'Unlimited' : "×#{trains.size}"
+                  count_str = trains.first.unlimited ? t('game.train.unlimited') : "×#{trains.size}"
 
                   tds = [h(:td, @game.info_train_name(trains.first)),
                          h("td#{price_str_class}", @game.info_train_price(trains.first)),
@@ -70,7 +71,7 @@ module View
               end
 
         h('div#upcoming_trains.card', [
-          h('div.title', title_props, 'Upcoming Trains'),
+          h('div.title', title_props, t('game.train.upcoming')),
           h(:div, body_props, [
             h(:table, [h(:tbody, trs)]),
           ]),

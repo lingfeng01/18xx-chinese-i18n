@@ -13,6 +13,7 @@ module View
       include Lib::Settings
       include Lib::Text
       include Lib::ProfileLink
+      include Lib::I18n
       include View::ShareCalculation
 
       needs :player
@@ -101,7 +102,7 @@ module View
 
         trs = [
           h(:tr, [
-            h(:td, 'Cash'),
+            h(:td, t('game.cash')),
             h('td.right', @game.format_currency(@player.cash)),
           ]),
         ]
@@ -111,11 +112,11 @@ module View
           if committed.positive?
             trs.concat([
               h(:tr, [
-                h(:td, 'Committed'),
+                h(:td, t('game.player.committed')),
                 h('td.right', @game.format_currency(committed)),
               ]),
               h(:tr, [
-                h(:td, 'Available'),
+                h(:td, t('game.player.available')),
                 h('td.right', @game.format_currency(@player.cash - committed)),
               ]),
             ])
@@ -124,7 +125,7 @@ module View
           if @game.active_step.respond_to?(:bidding_tokens)
             trs.concat([
               h(:tr, [
-                h(:td, 'Bid tokens'),
+                h(:td, t('game.player.bid_tokens')),
                 h('td.right', "#{@game.active_step.bidding_tokens(@player)} / #{@game.bidding_token_per_player}"),
               ]),
             ])
@@ -132,49 +133,49 @@ module View
         end
 
         trs.concat([
-          h(:tr, [
-            h(:td, 'Value'),
-            h('td.right', @game.format_currency(@game.player_value(@player))),
-          ]),
-          h(:tr, [
-            h(:td, 'Liquidity'),
-            h('td.right', @game.format_currency(@game.liquidity(@player))),
-          ]),
+            h(:tr, [
+              h(:td, t('game.company.value')),
+              h('td.right', @game.format_currency(@game.player_value(@player))),
+            ]),
+            h(:tr, [
+              h(:td, t('game.player.liquidity')),
+              h('td.right', @game.format_currency(@game.liquidity(@player))),
+            ]),
         ])
 
         if @player.debt.positive?
           trs << h(:tr, [
-            h(:td, 'Loan'),
+            h(:td, t('game.player.loan')),
             h('td.right', @game.format_currency(@player.debt)),
           ])
         end
 
         if @player.penalty.positive?
           trs << h(:tr, [
-            h(:td, 'Penalty'),
+            h(:td, t('game.player.penalty')),
             h('td.right', @game.format_currency(@player.penalty)),
           ])
         end
 
         if @game.respond_to?(:player_interest) && @game.player_interest(@player).positive?
           trs << h(:tr, [
-            h(:td, 'Interest'),
+            h(:td, t('game.player.interest')),
             h('td.right', @game.format_currency(@game.player_interest(@player))),
           ])
         end
 
         if @game.respond_to?(:bidding_power)
           trs << h(:tr, [
-            h(:td, 'Bid Power'),
+            h(:td, t('game.player.bid_power')),
             h('td.right', @game.format_currency(@game.bidding_power(@player))),
           ])
         end
         trs << h(:tr, [
-          h(:td, 'Certs'),
+          h(:td, t('game.company.certs')),
           h('td.right', td_cert_props, @game.show_game_cert_limit?(@player) ? "#{num_certs}/#{cert_limit}" : num_certs.to_s),
         ])
         trs << h(:tr, [
-          h(:td, 'Shares'),
+          h(:td, t('game.shares')),
           h('td.right', td_cert_props, (@game.all_corporations.sum { |c| c.minor? ? 0 : num_shares_of(@player, c) }).to_s),
         ])
         if @game.respond_to?(:player_card_rows)
@@ -203,7 +204,7 @@ module View
 
       def render_priority_deal(priority_props)
         h(:tr, [
-          h('td.center.italic', priority_props, 'Priority Deal'),
+          h('td.center.italic', priority_props, t('game.player.priority_deal')),
         ])
       end
 
@@ -211,7 +212,7 @@ module View
         position = @game.next_sr_position(@player) + 1
 
         h(:tr, [
-          h(:td, 'Next SR'),
+          h(:td, t('game.player.next_sr')),
           h('td.right', position == 1 ? priority_props : nil, ordinal(position)),
         ])
       end
