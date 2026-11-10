@@ -6,6 +6,7 @@ module View
   module Game
     class Bank < Snabberb::Component
       include Lib::Settings
+      include Lib::I18n
 
       needs :game
       needs :show_loan_table, default: false, store: true
@@ -32,22 +33,22 @@ module View
         trs = []
         interest_change = (@game.interest_change if @game.respond_to?(:interest_change))
         trs << h(:tr, [
-          h(:td, 'Cash'),
-          h('td.right', @game.unlimited_bank? ? 'Unlimited' : @game.format_currency(@game.bank_cash)),
+          h(:td, t('game.bank.cash')),
+          h('td.right', @game.unlimited_bank? ? t('game.bank.unlimited') : @game.format_currency(@game.bank_cash)),
         ])
         if (rate = @game.interest_rate)
           trs << h(:tr, [
-            h(:td, 'Interest per Loan'),
+            h(:td, t('game.bank.interest_per_loan')),
             h('td.right', @game.format_currency(rate)),
           ])
           if @game.respond_to?(:future_interest_rate)
             trs << h(:tr, [
-              h(:td, 'Future Interest per Loan'),
+              h(:td, t('game.bank.future_interest_per_loan')),
               h('td.right', @game.format_currency(@game.future_interest_rate)),
             ])
           end
           trs << h(:tr, [
-            h(:td, 'Loans'),
+            h(:td, t('game.bank.loans')),
             h('td.right', "#{@game.loans_taken}/#{@game.total_loans}"),
           ])
 
@@ -57,13 +58,13 @@ module View
             end
 
             props = {
-              attrs: { title: "#{@show_loan_table ? 'Hide' : 'Show'} loan table" },
+              attrs: { title: "#{@show_loan_table ? t('game.common.hide') : t('game.common.show')} #{t('game.bank.loan_table')}" },
               style: { width: '4rem', margin: '0' },
               on: { click: toggle_loan_table },
             }
             trs << h(:tr, [
-              h('td.middle', 'Loan Table'),
-              h('td.right', [h(:button, props, (@show_loan_table ? 'Hide' : 'Show').to_s)]),
+              h('td.middle', t('game.bank.loan_table')),
+              h('td.right', [h(:button, props, (@show_loan_table ? t('game.common.hide') : t('game.common.show')).to_s)]),
             ])
 
             if @show_loan_table
@@ -85,20 +86,20 @@ module View
             end
           end
           trs << h(:tr, [
-            h(:td, 'Loan Value'),
+            h(:td, t('game.bank.loan_value')),
             h('td.right', @game.format_currency(@game.loan_value)),
           ])
         end
         active_step = @game.round.active_step
         if active_step.respond_to?(:seed_money) && active_step.seed_money
           trs << h(:tr, [
-            h(:td, 'Seed Money'),
+            h(:td, t('game.bank.seed_money')),
             h('td.right', @game.format_currency(active_step.seed_money)),
           ])
         end
         if @game.respond_to?(:unstarted_corporation_summary)
           trs << h(:tr, [
-            h(:td, 'Unstarted corporations'),
+            h(:td, t('game.bank.unstarted_corporations')),
             h('td.right', @game.unstarted_corporation_summary.first),
           ])
         end
@@ -112,7 +113,7 @@ module View
         return '' if trs.empty?
 
         h('div#bank.card', [
-          h('div.title', title_props, 'The Bank'),
+          h('div.title', title_props, t('game.bank.title')),
           h(:div, body_props, [
             h(:table, trs),
             h(GameInfo, game: @game, layout: 'discarded_trains'),

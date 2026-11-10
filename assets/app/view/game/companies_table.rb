@@ -9,6 +9,8 @@ module View
       needs :companies, default: nil
       needs :title, default: 'Certs'
 
+      include Lib::I18n
+
       def render
         display_companies = @companies.flat_map do |c|
           h(Company, company: c, layout: :table)
@@ -24,8 +26,8 @@ module View
 
         h('div.unsold_company_table', table_props, [
           h('div.bold', @title),
-          h('div.bold.right', 'Value'),
-          h('div.bold.right', 'Income'),
+          h('div.bold.right', t('game.company.value')),
+          h('div.bold.right', t('game.company.income')),
           *display_companies,
         ])
       end

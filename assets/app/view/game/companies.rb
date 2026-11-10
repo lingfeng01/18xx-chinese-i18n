@@ -9,6 +9,8 @@ module View
       needs :owner, default: nil
       needs :show_hidden, default: false
 
+      include Lib::I18n
+
       def render
         owned_companies = @owner.companies
 
@@ -36,8 +38,8 @@ module View
         else
           h('div.company_table', table_props, [
             h('div.bold', @game.company_table_header),
-            @game.show_value_of_companies?(@owner) ? h('div.bold.right', 'Value') : '',
-            h('div.bold.right', 'Income'),
+            @game.show_value_of_companies?(@owner) ? h('div.bold.right', t('game.company.value')) : '',
+            h('div.bold.right', t('game.company.income')),
             *companies,
           ])
         end

@@ -6,6 +6,7 @@ module View
   module Game
     class Loans < Snabberb::Component
       include Actionable
+      include Lib::I18n
 
       needs :corporation
 
@@ -15,7 +16,7 @@ module View
         step = @game.round.active_step
 
         if actions.include?('payoff_loan')
-          payoff_loan_text = step.respond_to?(:payoff_loan_text) ? step.payoff_loan_text : 'Payoff Loan'
+          payoff_loan_text = step.respond_to?(:payoff_loan_text) ? step.payoff_loan_text : t('game.loan.payoff')
           children <<
           h(:button, {
               on: {
@@ -28,7 +29,7 @@ module View
         end
 
         if actions.include?('take_loan')
-          take_loan_text = step.respond_to?(:take_loan_text) ? step.take_loan_text : 'Take Loan'
+          take_loan_text = step.respond_to?(:take_loan_text) ? step.take_loan_text : t('game.loan.take')
           children << h(:button, {
                           on: {
                             click: lambda do
