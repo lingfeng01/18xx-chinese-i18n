@@ -49,7 +49,7 @@ module View
         end
 
         if companies.include?(@selected_company)
-          children << h(:div, { style: { margin: '0.5rem 0 0 0', maxWidth: '60rem' } }, @selected_company.desc)
+          children << h(:div, { style: { margin: '0.5rem 0 0 0', maxWidth: '60rem' } }, entity_desc(@selected_company.name))
           children.concat(render_actions)
         end
 
@@ -225,7 +225,7 @@ module View
             {},
             [
               (@combo_checkboxes[elm_id] = h('input', input_props)),
-              h(:label, label_props, company.name.to_s),
+              h(:label, label_props, entity_name(company.name).to_s),
             ],
           )
         end
