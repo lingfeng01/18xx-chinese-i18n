@@ -226,6 +226,27 @@ module Lib
           notepad_placeholder: '内容自动保存，其他玩家不可见。',
           notepad_hint: '私人记事本，自动保存；其他玩家不可见。',
         },
+
+        player: {
+          committed: '已承诺',
+          available: '可用资金',
+          bid_tokens: '出价筹码',
+          liquidity: '流动资金',
+          loan: '贷款',
+          penalty: '罚金',
+          interest: '利息',
+          bid_power: '出价能力',
+          priority_deal: '优先交易权',
+          next_sr: '下一股票轮',
+        },
+
+        train: {
+          upcoming: '即将到货火车',
+          none_upcoming: '暂无即将到货火车',
+          obsoletes: '淘汰：%{names}',
+          rusts: '报废：%{names}',
+          unlimited: '不限量',
+        },
       },
 
       # ── 关于页 ──────────────────────────────────────────────────
