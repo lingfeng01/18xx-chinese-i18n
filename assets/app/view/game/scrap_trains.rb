@@ -6,6 +6,7 @@ module View
   module Game
     class ScrapTrains < Snabberb::Component
       include Actionable
+      include Lib::I18n
       needs :corporation, default: nil
 
       def render
@@ -43,7 +44,7 @@ module View
       end
 
       def scrap_trains_header_text
-        @step.respond_to?(:scrap_header_text) ? @step.scrap_header_text : 'Trains to Scrap'
+        @step.respond_to?(:scrap_header_text) ? @step.scrap_header_text : t('game.scrap.to_scrap')
       end
 
       def scrap_trains(scrappable_trains)

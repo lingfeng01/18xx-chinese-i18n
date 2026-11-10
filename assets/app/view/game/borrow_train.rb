@@ -6,6 +6,7 @@ module View
   module Game
     class BorrowTrain < Snabberb::Component
       include Actionable
+      include Lib::I18n
       needs :corporation, default: nil
       def render
         step = @game.round.active_step
@@ -32,14 +33,14 @@ module View
         }
 
         if step.can_borrow_train?(@corporation)
-          children << h(:div, "#{@corporation.name} may borrow an available train")
-          children << h(:h3, h3_props, 'Available Trains')
+          children << h(:div, t('game.borrow.may_borrow', name: @corporation.name))
+          children << h(:h3, h3_props, t('game.borrow.available'))
           children << h(:div, div_props, [
             *from_depot(available),
           ])
         end
 
-        children << h(:h3, h3_props, 'Remaining Trains')
+        children << h(:h3, h3_props, t('game.borrow.remaining'))
         children << remaining_trains
 
         props = {
@@ -61,7 +62,7 @@ module View
 
           [
             h(:div, train.name),
-            h('button.no_margin', { on: { click: borrow_train } }, 'Borrow'),
+            h('button.no_margin', { on: { click: borrow_train } }, t('game.borrow.borrow')),
           ]
         end
       end
@@ -84,9 +85,9 @@ module View
         end
 
         h(:div, div_props, [
-          h('div.bold', 'Train'),
-          h('div.bold', 'Cost'),
-          h('div.bold', 'Qty'),
+          h('div.bold', t('game.borrow.train_col')),
+          h('div.bold', t('game.borrow.cost')),
+          h('div.bold', t('game.borrow.qty')),
           *rows,
         ])
       end

@@ -6,6 +6,7 @@ module View
   module Game
     class Tranches < Snabberb::Component
       include Lib::Settings
+      include Lib::I18n
 
       needs :game
 
@@ -52,7 +53,7 @@ module View
                   },
                 }
 
-              slots << h('td.center', available_props, available ? 'open' : 'closed')
+              slots << h('td.center', available_props, available ? t('game.tranch.open') : t('game.tranch.closed'))
               next
             end
 
@@ -74,7 +75,7 @@ module View
         return '' if trs.empty?
 
         h('div#tranches.card', [
-          h('div.title', title_props, 'Tranches'),
+          h('div.title', title_props, t('game.tranch.title')),
           h(:div, body_props, [
             h(:table, trs),
           ]),
