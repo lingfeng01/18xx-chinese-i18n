@@ -271,6 +271,26 @@ module Lib
           close_company: '关闭公司',
           combine_with: '组合：',
         },
+
+        borrow: {
+          may_borrow: '%{name} 可借用一列可用火车',
+          available: '可用火车',
+          remaining: '剩余火车',
+          borrow: '借用',
+          train_col: '火车',
+          cost: '价格',
+          qty: '数量',
+        },
+
+        scrap: {
+          to_scrap: '待报废火车',
+        },
+
+        tranch: {
+          title: '批次',
+          open: '开放',
+          closed: '关闭',
+        },
       },
 
       # ── 关于页 ──────────────────────────────────────────────────
