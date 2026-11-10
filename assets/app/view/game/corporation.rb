@@ -11,6 +11,7 @@ module View
       include Actionable
       include AlternateCorporations
       include Lib::Settings
+      include Lib::I18n
 
       needs :user, default: nil, store: true
       needs :bids, default: nil
@@ -278,7 +279,7 @@ module View
           end
 
         h('div.corp__holdings', holdings_row_props, [
-          h(:div, sym_props, @corporation.name),
+          h(:div, sym_props, entity_name(@corporation.name)),
           holdings,
           render_tokens,
         ])
@@ -419,7 +420,7 @@ module View
 
           type = entity.player? ? 'tr.player' : 'tr.corp'
           type += '.bold' if last_acted_upon
-          name = entity.player? ? entity.name : "© #{entity.name}"
+          name = entity.player? ? entity.name : "© #{entity_name(entity.name)}"
           show_percent = @game.class::SHOW_SHARE_PERCENT_OWNERSHIP
           percent_shares = num_shares * @corporation.share_percent
           percent_shares_str = percent_shares.positive? && show_percent ? " (#{percent_shares}%)" : ''
@@ -574,7 +575,7 @@ module View
         president_marker = corporation.president?(@corporation) ? '*' : ''
         h('tr.row', [
           h('td.center', td_props, [h(:div, div_props, [h(:img, logo_props)])]),
-          h(:td, td_props, corporation.name + president_marker),
+          h(:td, td_props, entity_name(corporation.name) + president_marker),
           h('td.right', td_props, "#{shares.sum(&:percent)}%"),
         ])
       end
@@ -713,9 +714,9 @@ module View
             }
           end
 
-          children = [h('div.nowrap', ability_props, ability.description)]
+          children = [h('div.nowrap', ability_props, entity_ability(ability.description))]
           if ability.desc_detail
-            children << @hidden_divs["#{@corporation.name}_#{i}"] = h(:div, hidden_props, ability.desc_detail)
+            children << @hidden_divs["#{@corporation.name}_#{i}"] = h(:div, hidden_props, entity_ability(ability.desc_detail))
           end
           children
         end
