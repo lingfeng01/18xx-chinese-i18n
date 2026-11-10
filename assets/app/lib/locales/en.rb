@@ -248,6 +248,30 @@ module Lib
           rusts: 'rusts %{names}',
           unlimited: 'Unlimited',
         },
+
+        map: {
+          player_colors: 'Player Colors',
+          simple_logos: 'Simple Logos',
+          location_names: 'Location Names',
+          hex_coords: 'Hex Coordinates',
+          tile_numbers: 'Tile Numbers',
+          starting_map: 'Starting Map',
+          show_last_route: 'Show Last Route and Tile For:',
+        },
+
+        ability: {
+          title: 'Abilities:',
+          show_others: 'Show Others',
+          hide_others: 'Hide Others',
+          show_others_title: 'Show companies of other players',
+          hide_others_title: 'Hide companies of other players',
+          assign_to: 'Assign to %{name}',
+          acquire_train: 'Acquire %{name} train from depot',
+          purchase_train: 'Purchase %{name} for %{price}',
+          sell_company: 'Sell company (%{price})',
+          close_company: 'Close company',
+          combine_with: 'Combine with:',
+        },
       },
 
       # ── About / Footer ──────────────────────────────────────────
