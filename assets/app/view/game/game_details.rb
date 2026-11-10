@@ -8,10 +8,11 @@ module View
     class GameDetails < Snabberb::Component
       include GameManager
       include Lib::ProfileLink
+      include Lib::I18n
 
       def render
         h('div.margined', [
-          h(:h3, 'Game Details'),
+          h(:h3, t('game.panel.details_title')),
           *render_game_info,
         ])
       end
@@ -41,10 +42,10 @@ module View
         user = @game_data['user']
         desc = @game_data['description']
         [
-          (info_row('Description', desc) unless desc.to_s.empty?),
-          h(:p, ['Host: ', host_display(user)]),
-          info_row('Created', format_time(@game_data['created_at'])),
-          info_row('Last Updated', format_time(@game_data['updated_at'])),
+          (info_row(t('game.panel.description'), desc) unless desc.to_s.empty?),
+          h(:p, [t('game.panel.host'), ': ', host_display(user)]),
+          info_row(t('game.panel.created'), format_time(@game_data['created_at'])),
+          info_row(t('game.panel.last_updated'), format_time(@game_data['updated_at'])),
         ].compact
       end
     end

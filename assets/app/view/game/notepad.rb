@@ -7,6 +7,7 @@ module View
   module Game
     class Notepad < Form
       include Actionable
+      include Lib::I18n
 
       def render_content
         return h(:div) if @game_data[:mode] == :hotseat || !@game.players.map(&:name).include?(@user&.dig('name'))
@@ -16,8 +17,8 @@ module View
           id: :notepad,
           el: :textarea,
           attrs: {
-            placeholder: 'Contents are autosaved and will not be seen by other players.',
-            title: 'Private notepad with autosave. Contents will not be seen by other players.',
+            placeholder: t('game.panel.notepad_placeholder'),
+            title: t('game.panel.notepad_hint'),
             rows: 10,
             cols: 80,
           },
@@ -33,7 +34,7 @@ module View
         )
 
         h(:div, [
-          h(:h3, 'Private Notepad'),
+          h(:h3, t('game.panel.notepad_title')),
           notepad,
         ])
       end

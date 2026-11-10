@@ -3,11 +3,12 @@
 module View
   module Game
     class GameMeta < Snabberb::Component
+      include Lib::I18n
       needs :game
       needs :show_title, default: true
 
       def render
-        children = [h(:h3, 'Game Info')]
+        children = [h(:h3, t('game.panel.meta_title'))]
 
         children.concat(render_title) if @show_title
         children.concat(render_publisher)
@@ -29,7 +30,7 @@ module View
         return [] unless @game.meta::GAME_PUBLISHER
 
         [h(:p, [
-          'Published by ',
+          t('game.panel.published_by'),
           *Lib::Publisher.link_list(component: self, publishers: Array(@game.meta::GAME_PUBLISHER)),
         ])]
       end
@@ -37,18 +38,18 @@ module View
       def render_designer
         return [] unless @game.meta::GAME_DESIGNER
 
-        [h(:p, "Designed by #{@game.meta::GAME_DESIGNER}")]
+        [h(:p, [t('game.panel.designed_by'), @game.meta::GAME_DESIGNER])]
       end
 
       def render_implementer
         return [] unless @game.meta::GAME_IMPLEMENTER
 
-        [h(:p, "Implemented by #{@game.meta::GAME_IMPLEMENTER}")]
+        [h(:p, [t('game.panel.implemented_by'), @game.meta::GAME_IMPLEMENTER])]
       end
 
       def render_rule_links
         unless @game.meta::GAME_RULES_URL.is_a?(Hash)
-          return [h(:p, [h(:a, { attrs: { href: @game.meta::GAME_RULES_URL, target: '_blank' } }, 'Rules')])]
+          return [h(:p, [h(:a, { attrs: { href: @game.meta::GAME_RULES_URL, target: '_blank' } }, t('game.panel.rules'))])]
         end
 
         @game.meta::GAME_RULES_URL.map do |desc, url|
@@ -68,17 +69,17 @@ module View
         end.compact
         return [] if used_optional_rules.empty?
 
-        [h(:h3, 'Optional Rules Used'), *used_optional_rules]
+        [h(:h3, t('game.panel.optional_rules_used')), *used_optional_rules]
       end
 
       def render_known_issues
-        [h(:p, [h(:a, { attrs: { href: @game.meta.known_issues_url, target: '_blank' } }, 'Known Issues')])]
+        [h(:p, [h(:a, { attrs: { href: @game.meta.known_issues_url, target: '_blank' } }, t('game.panel.known_issues'))])]
       end
 
       def render_more_info
         return [] unless @game.meta::GAME_INFO_URL
 
-        [h(:p, [h(:a, { attrs: { href: @game.meta::GAME_INFO_URL, target: '_blank' } }, 'More info')])]
+        [h(:p, [h(:a, { attrs: { href: @game.meta::GAME_INFO_URL, target: '_blank' } }, t('game.panel.more_info'))])]
       end
     end
   end
