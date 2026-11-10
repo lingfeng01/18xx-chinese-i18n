@@ -6,6 +6,7 @@ module View
   module Game
     class MapControls < Snabberb::Component
       include Lib::Settings
+      include Lib::I18n
       needs :show_starting_map, default: false, store: true
       needs :historical_routes, default: [], store: true
       needs :historical_laid_hexes, default: nil, store: true
@@ -13,11 +14,11 @@ module View
 
       def render
         children = [
-          render_controls('Player Colors', :show_player_colors),
-          render_controls('Simple Logos', :simple_logos),
-          render_controls('Location Names', :show_location_names),
-          render_controls('Hex Coordinates', :show_coords),
-          render_controls('Tile Numbers', :show_tiles),
+          render_controls(t('game.map.player_colors'), :show_player_colors),
+          render_controls(t('game.map.simple_logos'), :simple_logos),
+          render_controls(t('game.map.location_names'), :show_location_names),
+          render_controls(t('game.map.hex_coords'), :show_coords),
+          render_controls(t('game.map.tile_numbers'), :show_tiles),
           starting_map_controls,
           route_controls,
         ].compact
@@ -39,7 +40,7 @@ module View
           store(:show_starting_map, !@show_starting_map)
         end
 
-        render_button("Starting Map #{@show_starting_map ? '✅' : '❌'}", on_click)
+        render_button("#{t('game.map.starting_map')} #{@show_starting_map ? '✅' : '❌'}", on_click)
       end
 
       def generate_last_route(entity)
@@ -87,7 +88,7 @@ module View
         end
 
         attrs = {}
-        operators.unshift(h(:option, { attrs: attrs }, 'None'))
+        operators.unshift(h(:option, { attrs: attrs }, t('game.common.none')))
 
         route_change = lambda do
           operator_name = Native(@route_input).elm&.value
@@ -102,7 +103,7 @@ module View
         end
 
         @route_input = render_select(id: :route, on: { input: route_change }, children: operators)
-        h('label.inline-block', ['Show Last Route and Tile For:', @route_input])
+        h('label.inline-block', [t('game.map.show_last_route'), @route_input])
       end
 
       def render_select(id:, on: {}, children: [])

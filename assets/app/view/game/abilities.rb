@@ -7,6 +7,7 @@ module View
   module Game
     class Abilities < Snabberb::Component
       include Actionable
+      include Lib::I18n
 
       needs :show_other_abilities, default: false, store: true
       needs :combo_checkboxes, default: {}, store: false
@@ -26,7 +27,7 @@ module View
         current, others = companies.partition { |company| @game.current_entity.player == company.player }
 
         children = [
-          h('h3.inline', { style: { marginRight: '0.5rem' } }, 'Abilities:'),
+          h('h3.inline', { style: { marginRight: '0.5rem' } }, t('game.ability.title')),
           *render_companies(current),
         ]
 
@@ -39,11 +40,11 @@ module View
           end
 
           props = {
-            attrs: { title: "#{@show_other_abilities ? 'Hide' : 'Show'} companies of other players" },
+            attrs: { title: @show_other_abilities ? t('game.ability.hide_others_title') : t('game.ability.show_others_title') },
             style: { width: '7.3rem', margin: '0 0 0 0.5rem' },
             on: { click: toggle_show },
           }
-          children << h(:button, props, "#{@show_other_abilities ? 'Hide' : 'Show'} Others")
+          children << h(:button, props, @show_other_abilities ? t('game.ability.hide_others') : t('game.ability.show_others'))
           children << h(:div, render_companies(others)) if @show_other_abilities
         end
 
@@ -109,7 +110,7 @@ module View
           click = lambda do
             process_action(Engine::Action::Assign.new(@selected_company, target: corp))
           end
-          h(:button, { on: { click: click } }, "Assign to #{corp.name}")
+          h(:button, { on: { click: click } }, t('game.ability.assign_to', name: corp.name))
         end
         h(:div, buttons)
       end
@@ -132,9 +133,9 @@ module View
         # Show the train that will be bought on the button
         train = @game.depot.depot_trains.first
         button_text = if ability&.free
-                        "Acquire #{train.name} train from depot"
+                        t('game.ability.acquire_train', name: train.name)
                       else
-                        "Purchase #{train.name} for #{@game.format_currency(train.price)}"
+                        t('game.ability.purchase_train', name: train.name, price: @game.format_currency(train.price))
                       end
         h(:button, { on: { click: purchase } }, button_text)
       end
@@ -148,7 +149,7 @@ module View
           ))
         end
 
-        h(:button, { on: { click: sell } }, "Sell company (#{@game.format_currency(@selected_company.value)})")
+        h(:button, { on: { click: sell } }, t('game.ability.sell_company', price: @game.format_currency(@selected_company.value)))
       end
 
       def render_close_company_button
@@ -158,7 +159,7 @@ module View
           ))
         end
 
-        h(:button, { on: { click: close } }, 'Close company')
+        h(:button, { on: { click: close } }, t('game.ability.close_company'))
       end
 
       def render_ability_choice_buttons
@@ -233,7 +234,7 @@ module View
 
         h(:div, {}, [
             h(:br),
-            h('h4.inline', {}, 'Combine with:'),
+            h('h4.inline', {}, t('game.ability.combine_with')),
             *rendered_combos,
           ])
       end
