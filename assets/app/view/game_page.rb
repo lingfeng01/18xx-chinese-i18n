@@ -360,17 +360,17 @@ module View
 
       note = !@game_data.dig('user_settings', 'notepad').to_s.empty?
       menu_items = []
-      menu_items << item('游|戏', '')
-      menu_items << item('实|体', '#entities')
-      menu_items << item('地|图', '#map') unless @game.layout == :none
-      menu_items << item('股|市', '#market')
-      menu_items << item('信|息', '#info')
-      menu_items << item('板|块', '#tiles') unless @game.layout == :none
-      menu_items << item('表|格', '#spreadsheet')
-      menu_items << item("工|具#{' 📝' if note}", '#tools')
+      menu_items << item('游戏|', '')
+      menu_items << item('实体|', '#entities')
+      menu_items << item('地图|', '#map') unless @game.layout == :none
+      menu_items << item('股市|', '#market')
+      menu_items << item('信息|', '#info')
+      menu_items << item('板块|', '#tiles') unless @game.layout == :none
+      menu_items << item('表格|', '#spreadsheet')
+      menu_items << item("工具|#{' 📝' if note}", '#tools')
 
       enabled = !@game.programmed_actions[@game.player_by_id(@user['id'])].empty? if @user
-      menu_items << item("自|动#{' ✅' if enabled}", '#auto') if @game_data[:mode] != :hotseat && !cursor
+      menu_items << item("自动|#{' ✅' if enabled}", '#auto') if @game_data[:mode] != :hotseat && !cursor
 
       h('nav#game_menu', nav_props, [
         h('ul.no_margin.no_padding', { style: { width: 'max-content' } }, menu_items),
@@ -445,7 +445,7 @@ module View
 
       case @round
       when Engine::Round::Stock
-        if !( %w[place_token lay_tile remove_token] & current_entity_actions).empty?
+        if !(%w[place_token lay_tile remove_token] & current_entity_actions).empty?
           h(Game::Map, game: @game)
         else
           h(Game::Round::Stock, game: @game)
@@ -466,7 +466,7 @@ module View
            Engine::Round::Draft
         h(Game::Round::Auction, game: @game, user: @user)
       when Engine::Round::Merger
-        if !( %w[buy_train scrap_train reassign_trains] & current_entity_actions).empty? &&
+        if !(%w[buy_train scrap_train reassign_trains] & current_entity_actions).empty? &&
               @game.train_actions_always_use_operating_round_view?
           h(Game::Round::Operating, game: @game)
         else
