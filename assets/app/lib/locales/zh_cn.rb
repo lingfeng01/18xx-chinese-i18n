@@ -178,6 +178,7 @@ module Lib
           value: '价值',
           income: '收益',
           certs: '证书',
+          price: '价格',
         },
 
         action: {
@@ -391,6 +392,54 @@ module Lib
         email_or_username: '邮箱或用户名',
         create_account: '创建账号',
         temporary_password: '临时密码',
+      },
+
+      # ── 引擎数据叠加表（按英文原文查译文，未命中降级返回英文）──
+      # 仅存译文；en.rb 不镜像，切回英文时由查表逻辑原样返回原文。
+      engine: {
+        headers: {
+          'PRIVATE COMPANY' => '私有公司',
+        },
+        names: {
+          # 1846 私有公司
+          'Michigan Southern (Minor)' => '密歇根南方（支线）',
+          'Big 4 (Minor)' => '大四线（支线）',
+          'Chicago and Western Indiana' => '芝加哥与西印第安纳铁路',
+          'Mail Contract' => '邮政合同',
+          'Tunnel Blasting Company' => '隧道爆破公司',
+          'Meat Packing Company' => '肉类包装公司',
+          'Steamboat Company' => '蒸汽船公司',
+          'Lake Shore Line' => '湖滨线铁路',
+          'Michigan Central' => '密歇根中央铁路',
+          'Ohio & Indiana' => '俄亥俄与印第安纳铁路',
+          'Boomtown' => '新兴城镇',
+          'Little Miami' => '小迈阿密铁路',
+          # 1846 支线
+          'Michigan Southern' => '密歇根南方铁路',
+          'Big 4' => '大四线铁路',
+          # 1846 铁路公司
+          'Pennsylvania Railroad' => '宾夕法尼亚铁路',
+          'New York Central Railroad' => '纽约中央铁路',
+          'Baltimore & Ohio Railroad' => '巴尔的摩与俄亥俄铁路',
+          'Chesapeake & Ohio Railroad' => '切萨皮克与俄亥俄铁路',
+          'Erie Railroad' => '伊利铁路',
+          'Grand Trunk Railway' => '大干线铁路',
+          'Illinois Central Railroad' => '伊利诺伊中央铁路',
+        },
+        descs: {
+          'Michigan Southern (Minor)' => '开局持有 $60 现金、一列 2 型火车和底特律（C15）的站位标记。始终最先运营。其火车可在第 1 运营轮（OR1）运行。分红与持有者平分。收购方获得其现金、火车和站位标记，但不能在 MS 运营过的同一运营轮内运行这列 2 型火车。',
+          'Big 4 (Minor)' => '开局持有 $40 现金、一列 2 型火车和印第安纳波利斯（G9）的站位标记。始终在 MS 之后、其他铁路公司之前运营。其火车可在第 1 运营轮（OR1）运行。分红与持有者平分。收购方获得其现金、火车和站位标记，但不能在 BIG4 运营过的同一运营轮内运行这列 2 型火车。',
+          'Chicago and Western Indiana' => '在芝加哥（D6）东南入口、紧邻 E7 处预留一个站位标记位。持有公司可在此免费额外放置一个站位标记（无需相连）。本公司被铁路公司收购或关闭后，该预留位即解除。',
+          'Mail Contract' => '持有公司的单列火车每途经一座城市，即获得 $10 加成。被铁路公司收购后永不关闭；若由玩家持有，则在阶段 III 关闭。',
+          'Tunnel Blasting Company' => '为持有公司在山地（带棕色三角的格子）和隧道连接格（棕色格边）铺轨时减免 $20 费用。',
+          'Meat Packing Company' => '为持有公司在圣路易斯（I1）或芝加哥（D6）之一提供 $30 加成。加成须在被铁路公司收购后指派。本公司在阶段 III 关闭后加成保留，阶段 IV 时移除。',
+          'Steamboat Company' => '为一座港口城市增加收益加成：惠灵（G19）/ 荷兰（B8）$40，或芝加哥联络线（C5）/ 托莱多（D14）/ 圣路易斯（I1）$20。每个运营轮开始时，本公司持有者可将该加成重新指派给另一座港口城市和/或铁路公司（含支线）。被铁路公司收购后，加成永久归属该公司。本公司在阶段 III 关闭后加成保留，阶段 IV 时移除。',
+          'Lake Shore Line' => '持有公司可在克利夫兰（E17）或托莱多（D14）之一免费额外升级一块绿色板块。',
+          'Michigan Central' => '持有公司可在预留格 B10、B12 免费额外铺设至多两块黄色板块。若两块都铺设，二者必须相连。使用本能力时，持有公司无需与任一格子相连。',
+          'Ohio & Indiana' => '持有公司可在预留格 F14、F16 免费额外铺设至多两块黄色板块。若两块都铺设，二者必须相连。使用本能力时，持有公司无需与任一格子相连。',
+          'Boomtown' => '为持有公司在辛辛那提（H12）提供 $20 加成。加成须在被铁路公司收购后指派。本公司在阶段 III 关闭后加成保留，阶段 IV 时移除。',
+          'Little Miami' => '若尚无轨道连接辛辛那提（H12）与代顿（G13），持有公司可在两格各免费额外铺设和/或升级一块板块将其相连。使用本能力时，持有公司无需与任一格子相连。',
+        },
       },
     }.freeze
   end
