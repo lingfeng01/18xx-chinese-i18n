@@ -103,7 +103,6 @@ module Lib
       game: {
         your_turn: '轮到你了',
         not_your_turn: '等待中',
-        bank: '银行',
         market: '股市',
         shares: '股份',
         treasury: '库存',
@@ -116,7 +115,6 @@ module Lib
         turn: '回合',
         operating_round: '运营轮',
         stock_round: '股票轮',
-        dividend: '分红',
         buy_train: '购买火车',
         buy_shares: '买入股份',
         sell_shares: '卖出股份',
@@ -128,6 +126,59 @@ module Lib
         settings: '设置',
         end_game: '结束游戏',
         resign: '认输',
+
+        common: {
+          show: '显示',
+          hide: '隐藏',
+          none: '无',
+        },
+
+        bank: {
+          title: '银行',
+          cash: '现金',
+          unlimited: '无限',
+          interest_per_loan: '每笔贷款利息',
+          future_interest_per_loan: '未来每笔贷款利息',
+          loans: '贷款',
+          loan_table: '贷款表',
+          loan_value: '贷款额度',
+          seed_money: '启动资金',
+          unstarted_corporations: '未上市公司',
+        },
+
+        tool: {
+          master_mode: '主控模式',
+          move_for_others: '可替他人操作',
+          move_for_others_enable: '开启后可替他人操作',
+          confirm_end_game: '确认结束游戏',
+          help: '帮助',
+          hotkeys: '快捷键',
+          notification_hint: '在游戏聊天中 @用户名 即可通知玩家（邮件 / Webhook）',
+        },
+
+        dividend: {
+          label: '分红',
+          payout: '派息',
+          withhold: '留存',
+          half_pay: '半额派息',
+          acquisition: '（收购）',
+          penalties: '罚金',
+          per_share: '每股',
+          stock_moves: '股价变动',
+          pay_dividends: '派发分红',
+          pay_dividend: '派发分红',
+        },
+
+        loan: {
+          payoff: '偿还贷款',
+          take: '借入贷款',
+        },
+
+        company: {
+          value: '价值',
+          income: '收益',
+          certs: '证书',
+        },
       },
 
       # ── 关于页 ──────────────────────────────────────────────────
