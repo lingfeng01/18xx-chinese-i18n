@@ -179,6 +179,7 @@ module Lib
           value: 'Value',
           income: 'Income',
           certs: 'Certs',
+          price: 'Price',
         },
 
         action: {
@@ -392,6 +393,15 @@ module Lib
         email_or_username: 'Email or username',
         create_account: 'Create Account',
         temporary_password: 'Temporary Password',
+      },
+
+      # Engine data overlay: translations live only in zh_cn.rb; English falls
+      # back to the original source string, so no mirror entries are needed here.
+      engine: {
+        headers: {},
+        names: {},
+        descs: {},
+        ability: {},
       },
     }.freeze
   end
