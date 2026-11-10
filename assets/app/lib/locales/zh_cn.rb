@@ -291,6 +291,24 @@ module Lib
           open: '开放',
           closed: '关闭',
         },
+
+        offer: {
+          corp: '公司：',
+          price: '价格：',
+          offer: '报价',
+        },
+
+        issue: {
+          emergency: '紧急增发',
+          issue: '增发',
+          redeem: '回购',
+          ipo: 'IPO ',
+        },
+
+        entity: {
+          closed: ' （已关闭）',
+          order: '顺序',
+        },
       },
 
       # ── 关于页 ──────────────────────────────────────────────────
