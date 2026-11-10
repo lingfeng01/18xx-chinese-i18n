@@ -13,6 +13,7 @@ module View
     class Tools < Snabberb::Component
       include GameManager
       include Actionable
+      include Lib::I18n
 
       needs :game, store: true
       needs :user
@@ -33,7 +34,7 @@ module View
 
       def player_notification
         h('div.margined', [
-          h(:label, 'Send any player a notification (via email/webhooks) by tagging them in game chat: @username'),
+          h(:label, t('game.tool.notification_hint')),
         ])
       end
 
@@ -45,8 +46,8 @@ module View
         end
 
         h('div.margined', [
-          h(:button, { on: { click: toggle } }, "Master Mode #{mode ? '✅' : '❌'}"),
-          h(:label, "#{mode ? 'You can' : 'Enable to'} move for others"),
+          h(:button, { on: { click: toggle } }, "#{t('game.tool.master_mode')} #{mode ? '✅' : '❌'}"),
+          h(:label, mode ? t('game.tool.move_for_others') : t('game.tool.move_for_others_enable')),
         ])
       end
 
@@ -61,12 +62,12 @@ module View
               store(:app_route, @app_route.split('#').first)
             end
             [
-              h(:button, { on: { click: -> { store(:confirm_endgame, false) } }, style: { width: '7rem' } }, 'Cancel'),
-              h(:button, { on: { click: confirm } }, 'Confirm End Game'),
+              h(:button, { on: { click: -> { store(:confirm_endgame, false) } }, style: { width: '7rem' } }, t('buttons.cancel')),
+              h(:button, { on: { click: confirm } }, t('game.tool.confirm_end_game')),
             ]
           else
             [
-              h(:button, { on: { click: -> { store(:confirm_endgame, true) } }, style: { width: '7rem' } }, 'End Game'),
+              h(:button, { on: { click: -> { store(:confirm_endgame, true) } }, style: { width: '7rem' } }, t('game.end_game')),
             ]
           end
 
@@ -87,7 +88,7 @@ module View
           },
         }
 
-        [h(:h2, 'Help'), h(:a, props, 'Hotkeys & Shortcuts')]
+        [h(:h2, t('game.tool.help')), h(:a, props, t('game.tool.hotkeys'))]
       end
     end
   end
