@@ -227,6 +227,27 @@ module Lib
           notepad_placeholder: 'Contents are autosaved and will not be seen by other players.',
           notepad_hint: 'Private notepad with autosave. Contents will not be seen by other players.',
         },
+
+        player: {
+          committed: 'Committed',
+          available: 'Available',
+          bid_tokens: 'Bid tokens',
+          liquidity: 'Liquidity',
+          loan: 'Loan',
+          penalty: 'Penalty',
+          interest: 'Interest',
+          bid_power: 'Bid Power',
+          priority_deal: 'Priority Deal',
+          next_sr: 'Next SR',
+        },
+
+        train: {
+          upcoming: 'Upcoming Trains',
+          none_upcoming: 'No Upcoming Trains',
+          obsoletes: 'obsoletes %{names}',
+          rusts: 'rusts %{names}',
+          unlimited: 'Unlimited',
+        },
       },
 
       # ── About / Footer ──────────────────────────────────────────
