@@ -180,6 +180,16 @@ module Lib
           income: 'Income',
           certs: 'Certs',
         },
+
+        action: {
+          broken: 'This game is broken and cannot accept any new actions. If this issue has not already been reported, please follow the instructions at the top of the page to report it.',
+          browsing_history: 'You cannot make changes while browsing history. Press >| to navigate to the current game action.',
+          only_actor: 'Only %{names} may perform that action. Turn on master mode under the Tools menu to act for others.',
+          not_your_turn: 'Not your turn. Turn on master mode under the Tools menu to act for others.',
+          server_rejected: 'The server did not accept this action due to: %{error}... refreshing.',
+          not_in_game: 'You are not in this game. Moves are temporary. You can clone this game in the tools tab.',
+          consent: 'Click confirm if %{names} has already consented to this action.',
+        },
       },
 
       # ── About / Footer ──────────────────────────────────────────
