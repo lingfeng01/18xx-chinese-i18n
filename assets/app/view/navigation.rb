@@ -5,18 +5,20 @@ require 'view/logo'
 
 module View
   class Navigation < Snabberb::Component
+    include Lib::I18n
+
     needs :app_route, default: nil, store: true
     needs :user, default: nil, store: true
 
     def render
-      other_links = [item('About', '/about')]
+      other_links = [item(t('nav.about'), '/about')]
 
       if @user
-        other_links << item('Admin', '/admin') if @user.dig('settings', 'admin')
-        other_links << item("Profile (#{@user['name']})", "/profile/#{@user['id']}")
+        other_links << item(t('nav.admin'), '/admin') if @user.dig('settings', 'admin')
+        other_links << item("#{t('nav.profile')} (#{@user['name']})", "/profile/#{@user['id']}")
       else
-        other_links << item('Signup', '/signup')
-        other_links << item('Login', '/login')
+        other_links << item(t('nav.signup'), '/signup')
+        other_links << item(t('nav.login'), '/login')
       end
 
       props = {

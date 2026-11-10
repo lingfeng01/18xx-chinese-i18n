@@ -4,6 +4,7 @@
 
 module View
   class Confirm < Snabberb::Component
+    include Lib::I18n
     # confirm_opts can be passed as a string which will default to yellow
     # if calling with a dictionary, you need to specify the skip or else
     # the opal compiler will remove the value
@@ -44,7 +45,7 @@ module View
 
       h(:div, props, [
         @confirm_opts[:message],
-        h(:button, { style: { marginLeft: '1rem' }, on: { click: complete } }, 'Confirm'),
+        h(:button, { style: { marginLeft: '1rem' }, on: { click: complete } }, t('buttons.confirm')),
       ])
     end
   end

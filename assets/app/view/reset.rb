@@ -6,15 +6,16 @@ require 'view/form'
 module View
   class Reset < Form
     include UserManager
+    include Lib::I18n
 
     def render_content
-      title = 'Reset Password'
+      title = t('auth.reset_title')
       inputs = [
-        render_input('Email', id: :email, type: :email, attrs: { autocomplete: 'email' }),
-        render_input('Temporary Password', id: :hash, type: :password, attrs: { autocomplete: 'temp-password' }),
-        render_input('New Password', id: :password, type: :password, attrs: { autocomplete: 'new-password' }),
+        render_input(t('auth.email'), id: :email, type: :email, attrs: { autocomplete: 'email' }),
+        render_input(t('profile.temporary_password'), id: :hash, type: :password, attrs: { autocomplete: 'temp-password' }),
+        render_input(t('auth.new_password'), id: :password, type: :password, attrs: { autocomplete: 'new-password' }),
         turnstile_widget,
-        h(:div, [render_button('Reset Password') { submit }]),
+        h(:div, [render_button(t('auth.reset_title')) { submit }]),
       ]
       render_form(title, inputs)
     end

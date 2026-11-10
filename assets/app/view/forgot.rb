@@ -6,13 +6,14 @@ require 'view/form'
 module View
   class Forgot < Form
     include UserManager
+    include Lib::I18n
 
     def render_content
-      title = 'Forgot Password'
+      title = t('auth.forgot_title')
       inputs = [
-        render_input('Email', id: :email, type: :email, attrs: { autocomplete: 'email' }),
+        render_input(t('auth.email'), id: :email, type: :email, attrs: { autocomplete: 'email' }),
         turnstile_widget,
-        h(:div, [render_button('Reset Password') { submit }]),
+        h(:div, [render_button(t('auth.send_reset')) { submit }]),
       ]
       render_form(title, inputs)
     end
