@@ -4,6 +4,8 @@ x-rack: &rack
     DATABASE_URL: postgres://root:password@db:5432/18xx_development
     RACK_ENV: development
     OPAL_PREFORK_DISABLE: "true"
+    # Self-hosted over a bare IP/port: Turnstile cannot mint a valid token, so skip it.
+    DISABLE_TURNSTILE: "true"
     # debug/info/warn/error/fatal
     DB_LOG_LEVEL: fatal
   build:

@@ -173,6 +173,9 @@ class Api
   # itself errors it fails closed in production, open elsewhere.
   def verify_turnstile!
     return if ENV['RACK_ENV'] == 'test'
+    # Self-hosted deployments over a bare IP / non-registered hostname cannot
+    # mint a valid Turnstile token; disable the captcha via DISABLE_TURNSTILE=1.
+    return if TURNSTILE_DISABLED
 
     token = request.params['cf_turnstile_response'].to_s
     halt(400, 'Please complete the captcha') if token.empty?

@@ -6,7 +6,11 @@ PRODUCTION = ENV['RACK_ENV'] == 'production'
 # outside production we use Cloudflare's always-pass test keys so local dev works
 # without registering a hostname. In production the real secret is required -- we
 # never fall back to the always-pass test secret.
-TURNSTILE_SITEKEY = PRODUCTION ? '0x4AAAAAADuTm2-bvPUtb2pz' : '1x00000000000000000000AA'
+# Set DISABLE_TURNSTILE=1 (or true) on self-hosted deployments served over a bare
+# IP / non-registered hostname: the widget cannot mint a valid token there, so the
+# captcha is skipped server-side and no widget is rendered client-side.
+TURNSTILE_DISABLED = %w[1 true].include?(ENV['DISABLE_TURNSTILE'].to_s.downcase)
+TURNSTILE_SITEKEY = TURNSTILE_DISABLED ? nil : (PRODUCTION ? '0x4AAAAAADuTm2-bvPUtb2pz' : '1x00000000000000000000AA')
 raise 'TURNSTILE_SECRET must be set in production' if PRODUCTION && ENV['TURNSTILE_SECRET'].to_s.empty?
 
 TURNSTILE_SECRET = ENV['TURNSTILE_SECRET'] || '1x0000000000000000000000000000000AA'
@@ -41,7 +45,7 @@ class Api < Roda
     csp.form_action :self
     csp.script_src :self, :unsafe_inline, 'cdn.jsdelivr.net', 'challenges.cloudflare.com'
     csp.frame_src :self, 'challenges.cloudflare.com'
-    csp.connect_src :self
+    csp.connect_src :self, 'cdn.jsdelivr.net'
     csp.base_uri :none
     csp.frame_ancestors :none
   end
@@ -254,11 +258,13 @@ class Api < Roda
       **needs,
     )
 
+    turnstile_script = TURNSTILE_DISABLED ? '' : '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>'
+
     <<~HTML
       <!DOCTYPE html>
       <html>
         <head>
-           <meta charset=\"utf-8\">
+           <meta charset=\"\utf-8\">
            <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0\">
            <title>18xx.Games#{desc}</title>
            <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css\">
@@ -270,14 +276,14 @@ class Api < Roda
            <link rel=\"mask-icon\" href=\"/images/mask.svg\" color=\"#f0e68c\">
            <link rel=\"manifest\" href=\"/site.webmanifest\">
            <meta rel=\"msapplication-TileColor\" content=\"#da532c\">
-           <meta id=\"theme_color\" rel=\"theme-color\" name=\"theme-color\" content=\"#ffffff\">
+           <meta id=\"theme_color\" name=\"theme-color\" content=\"#ffffff\">
            <meta id=\"theme_ms\" rel=\"msapplication-navbutton-color\" name=\"msapplication-navbutton-color\" content=\"#ffffff\">
-           <meta id=\"theme_apple\" rel=\"apple-mobile-web-app-status-bar-style\" name=\"apple-mobile-web-app-status-bar-style\" content=\"#ffffff\">
+           <meta id=\"theme_apple\" rel=\"apple-mobile-web-app-status-bar-style\" name=\"theme-color\" content=\"#ffffff\">
            <link rel=\"stylesheet\" href=\"/assets/main.css\">
-           <script src=\"https://challenges.cloudflare.com/turnstile/v0/api.js\" async defer></script>
+           #{turnstile_script}
         </head>
         <body>
-          <div id="app"></div>
+          <div id=\"app\"></div>
           #{js_tags}
           <script>Opal.App.$attach('app', #{HtmlSafe.escape_inline_script(args)})</script>
         </body>
