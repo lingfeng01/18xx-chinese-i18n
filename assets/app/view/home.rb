@@ -13,6 +13,7 @@ require 'view/welcome'
 module View
   class Home < Snabberb::Component
     include GameManager
+    include Lib::I18n
     include Lib::Settings
 
     needs :user
@@ -45,11 +46,11 @@ module View
         .map { |k| Lib::Storage[k] }
         .sort_by { |gd| [-(gd[:updated_at] || now), gd[:id]] }
 
-      render_row(children, 'Your Games', your_games, :personal) if @user
-      render_row(children, 'Hotseat Games', hotseat, :hotseat) if hotseat.any?
-      render_row(children, 'New Games', grouped['new']&.sort_by { |g| -g['created_at'] }, :new) if @user
-      render_row(children, 'Active Games', grouped['active']&.sort_by { |g| -g['updated_at'] }, :active)
-      render_row(children, 'Finished Games', grouped['finished']&.sort_by { |g| -g['finished_at'] }, :finished)
+      render_row(children, t('welcome.your_games'), your_games, :personal) if @user
+      render_row(children, t('welcome.hotseat_games'), hotseat, :hotseat) if hotseat.any?
+      render_row(children, t('welcome.new_games'), grouped['new']&.sort_by { |g| -g['created_at'] }, :new) if @user
+      render_row(children, t('welcome.active_games'), grouped['active']&.sort_by { |g| -g['updated_at'] }, :active)
+      render_row(children, t('welcome.finished_games'), grouped['finished']&.sort_by { |g| -g['finished_at'] }, :finished)
       render_filter_row(children)
 
       game_refresh
