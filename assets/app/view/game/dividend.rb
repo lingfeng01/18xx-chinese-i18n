@@ -8,6 +8,7 @@ module View
     class Dividend < Snabberb::Component
       include Actionable
       include Lib::Settings
+      include Lib::I18n
 
       needs :routes, store: true, default: []
 
@@ -26,11 +27,11 @@ module View
           text =
             case type
             when :payout
-              'Pay Out'
+              t('game.dividend.payout')
             when :withhold
-              'Withhold'
+              t('game.dividend.withhold')
             when :half
-              'Half Pay'
+              t('game.dividend.half_pay')
             else
               @step.respond_to?(:dividend_name) ? @step.dividend_name(type) : type
             end
@@ -56,15 +57,15 @@ module View
                   "#{real_moves} #{dir.tr('_', ' ')}"
                 end.compact.join(', ')
 
-              movement_str.empty? ? 'None' : movement_str
+              movement_str.empty? ? t('game.common.none') : movement_str
             else
-              'None'
+              t('game.common.none')
             end
 
           if entity.loans.any? && !@game.can_pay_interest?(entity, corp_income) && @game.cannot_pay_interest_str
             text += " #{@game.cannot_pay_interest_str}"
           elsif new_share_price&.acquisition?
-            text += ' (Acquisition)'
+            text += t('game.dividend.acquisition')
           end
 
           click = lambda do
@@ -114,7 +115,7 @@ module View
         penalties = h(:span)
         if corporation_interest_penalty?(entity) || player_interest_penalty?(entity)
           penalties = h(:div, [
-            h(:h3, 'Penalties'),
+            h(:h3, t('game.dividend.penalties')),
             h(:p, corporation_penalty),
             h(:p, player_penalty),
           ])
@@ -125,10 +126,10 @@ module View
           h(:table, table_props, [
             h(:thead, [
               h(:tr, [
-                h('th.no_padding', 'Dividend'),
-                h(:th, 'Treasury'),
-                h(:th, share_props, 'Per Share'),
-                h(:th, 'Stock Moves'),
+                h('th.no_padding', t('game.dividend.label')),
+                h(:th, t('game.treasury')),
+                h(:th, share_props, t('game.dividend.per_share')),
+                h(:th, t('game.dividend.stock_moves')),
               ]),
             ]),
             h(:tbody, payout_options),
@@ -163,11 +164,11 @@ module View
 
         h(:div,
           [
-            h(:h3, { style: { margin: '0.5rem 0 0.2rem 0' } }, 'Pay Dividends'),
+            h(:h3, { style: { margin: '0.5rem 0 0.2rem 0' } }, t('game.dividend.pay_dividends')),
             @step.help_str(max),
             h(:div, [
               input,
-              h(:button, { on: { click: -> { create_dividend(input) } } }, 'Pay Dividend'),
+              h(:button, { on: { click: -> { create_dividend(input) } } }, t('game.dividend.pay_dividend')),
             ]),
             dividend_chart,
         ])
