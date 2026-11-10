@@ -56,19 +56,22 @@ module Lib
 
     # 点号路径查找翻译，例如 t('nav.about')
     # 找不到时返回 key 本身，便于发现遗漏的翻译
-    def self.t(key)
+    # vars 可选，用于替换字符串中的 %{key} 占位，例如 t('greet.name', name: '张三')
+    def self.t(key, vars = nil)
       parts = key.to_s.split('.')
       val = dict
       parts.each do |p|
         val = val.is_a?(Hash) ? val[p.to_sym] : nil
         break if val.nil?
       end
-      val.nil? ? key : val.to_s
+      val = val.nil? ? key : val.to_s
+      vars&.each { |k, v| val = val.gsub("%{#{k}}", v.to_s) }
+      val
     end
 
     # 简短别名，include 后可直接用 t('...')
-    def t(key)
-      Lib::I18n.t(key)
+    def t(key, vars = nil)
+      Lib::I18n.t(key, vars)
     end
   end
 end
