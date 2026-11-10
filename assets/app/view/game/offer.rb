@@ -6,6 +6,7 @@ module View
   module Game
     class Offer < Snabberb::Component
       include Actionable
+      include Lib::I18n
 
       needs :player
       needs :corporations, default: []
@@ -62,11 +63,11 @@ module View
                        end
 
         h(:div, [
-          'Corp:',
+          t('game.offer.corp'),
           @corp_dropdown,
-          'Price:',
+          t('game.offer.price'),
           @price_input,
-          h('button.no_margin', { on: { click: offer_click } }, 'Offer'),
+          h('button.no_margin', { on: { click: offer_click } }, t('game.offer.offer')),
         ])
       end
 

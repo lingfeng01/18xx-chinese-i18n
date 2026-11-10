@@ -6,6 +6,7 @@ module View
   module Game
     class IssueShares < Snabberb::Component
       include Actionable
+      include Lib::I18n
       needs :entity, default: nil
 
       def emergency?
@@ -21,13 +22,13 @@ module View
         children = []
 
         if @current_actions.include?('sell_shares') && (step = @game.round.step_for(@entity, 'sell_shares'))
-          issue_text = emergency? ? 'Emergency Issue' : 'Issue'
+          issue_text = emergency? ? t('game.issue.emergency') : t('game.issue.issue')
           issue_text = step.issue_text(@entity) if step.respond_to?(:issue_text)
           children << render_shares(issue_text, step.issuable_shares(@entity), Engine::Action::SellShares)
         end
 
         if @current_actions.include?('buy_shares') && (step = @game.round.step_for(@entity, 'buy_shares'))
-          children << render_shares('Redeem', step.redeemable_shares(@entity), Engine::Action::BuyShares)
+          children << render_shares(t('game.issue.redeem'), step.redeemable_shares(@entity), Engine::Action::BuyShares)
         end
 
         h('div.margined', children.compact)
@@ -65,7 +66,7 @@ module View
         name = if @step.respond_to?(:issue_corp_name)
                  "#{@step.issue_corp_name(bundle)} "
                elsif bundle.owner == @game.bank
-                 'IPO '
+                 t('game.issue.ipo')
                else
                  ''
                end

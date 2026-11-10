@@ -9,6 +9,7 @@ module View
     class EntityList < Snabberb::Component
       include Lib::Settings
       include Lib::ProfileLink
+      include Lib::I18n
 
       needs :round
       needs :entities
@@ -78,7 +79,7 @@ module View
           acting_owner = @game.acting_for_entity(entity)
           owner =
             if entity.closed?
-              ' (CLOSED)'
+              t('game.entity.closed')
             elsif entity.player? || !entity.owner
               ''
             elsif acting_owner.player?
@@ -93,7 +94,7 @@ module View
 
         div_props = {
           key: 'entity_order',
-          attrs: { title: 'Order' },
+          attrs: { title: t('game.entity.order') },
           style: {
             margin: '1rem 0',
             overflow: 'auto',
